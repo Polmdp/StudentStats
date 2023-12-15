@@ -18,7 +18,7 @@ class Materia(models.Model):
     correlativas = models.ManyToManyField('self', symmetrical=False, blank=True)
 
     # Relaciones
-    correlativas = models.ManyToManyField('self', symmetrical=False, blank=True)
+
 
     def __str__(self):
         return f"{self.codigo} - {self.nombre}"
