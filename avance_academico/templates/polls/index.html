@@ -5,16 +5,16 @@
     <title>Title</title>
 </head>
 <body>
-<button class="nombre_de_clase"> Ver materiasdetail
-</button>
 
-  {% if latest_materia_list %}
+
+{% if materias_list %}
     <ul>
-    {% for materia in latest_materia_list %}
-        <li><a href="{% url 'polls:detail' materia.id %}">{{ materia.nombre }}</a></li>    {% endfor %}
+        {% for materia in materias_list %}
+            <li>{{ materia.nombre }}</li>
+        {% endfor %}
     </ul>
-  {% else %}
-    <p>No polls are available.</p>
-  {% endif %}
+{% else %}
+    <p></p>
+{% endif %}
 </body>
 </html>

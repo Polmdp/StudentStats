@@ -5,9 +5,6 @@ from django.shortcuts import render
 from django.views import generic
 from .models import Materia
 
-"""def index(request):
-    return HttpResponse("Hello, world. You're at the polls index.")
-"""
 
 class IndexView(generic.ListView):
     template_name = "polls/index.html"
