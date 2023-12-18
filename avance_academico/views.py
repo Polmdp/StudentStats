@@ -30,5 +30,3 @@ def detallemateria(request,id):
     return render(request, "avance_academico/detail_materia.html", {"materia": materia})
 
 
-
-

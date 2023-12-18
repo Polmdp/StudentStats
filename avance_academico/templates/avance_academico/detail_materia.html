@@ -5,8 +5,10 @@
     <title>Title</title>
 </head>
 <body>
-
 <ul>
+    <li><a>Año: {{ materia.anio }}</a></li>
+     <li><a>Duracion: {{ materia.duracion }}</a></li>
+    <li><a>Correlativas:</a></li>
     {% for correlativa in materia.correlativas.all %}
     <li><a>{{correlativa.nombre}},Año: {{ correlativa.anio }}, Tipo: {{ correlativa.duracion }} </a> </li>
 {% endfor %}
