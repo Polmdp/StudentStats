@@ -14,7 +14,7 @@
     <ul>
         {% for materia in materia_list %}
 
-            <li><a href="{% url 'avance_academico:lista-materias' %}"
+            <li><a href="{% url 'avance_academico:detail-materia' materia.id %}"
                    class="badge badge-secondary"> {{ materia.nombre }} </a>
             </li>
         {% endfor %}
