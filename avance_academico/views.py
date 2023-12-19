@@ -1,6 +1,11 @@
 from urllib import request
 
 from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
+
+
+from .forms import ProfesorForm
 
 # Create your views here.
 
@@ -36,3 +41,22 @@ def detalleprofesor(request,id):
     profesor=get_object_or_404(Profesor,pk=id)
     return render(request,"avance_academico/detail_profesor.html",{"profesor":profesor})
 
+
+def get_name(request):
+
+    # if this is a POST request we need to process the form data
+    if request.method == "POST":
+        # create a form instance and populate it with data from the request:
+        form = ProfesorForm(request.POST)
+        # check whether it's valid:
+        if form.is_valid():
+            # process the data in form.cleaned_data as required
+            # ...
+            # redirect to a new URL:
+            return HttpResponseRedirect("/thanks/")
+
+    # if a GET (or any other method) we'll create a blank form
+    else:
+        form = ProfesorForm()
+
+    return render(request, "avance_academico/agrega-profesor.html", {"form": form})
