@@ -1,28 +1,7 @@
 from django.contrib.auth.models import User
-from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
-from django.forms import ModelForm
 
 
-class Materia(models.Model):
-    Tipo_cursada = (
-        ('ANUAL', 'ANUAL'),
-        ('PRIMER CUATRIMESTRE', 'PRIMER CUATRIMESTRE'),
-        ('SEGUNDO CUATRIMESTRE', 'SEGUNDO CUATRIMESTRE')
-    )
-    # Campos básicos
-    codigo = models.CharField(max_length=20)
-    nombre = models.CharField(max_length=100)
-    anio = models.IntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
-    duracion = models.CharField(max_length=50, choices=Tipo_cursada, null=True, blank=True)
-    # Relaciones
-    correlativas = models.ManyToManyField('self', symmetrical=False, blank=True)
-
-    # Relaciones
-
-
-    def __str__(self):
-        return f"{self.codigo} - {self.nombre}"
 
 
 class Estudiante(models.Model):
@@ -39,10 +18,3 @@ class Estudiante(models.Model):
     def __str__(self):
         return f"{self.nombre} {self.apellido} ({self.dni})"
 
-class Profesor(models.Model):
-    #campos basicos
-    nombre_profesor = models.CharField(max_length=200, default="0")
-    apellido_profesor = models.CharField(max_length=200, default="0")
-    materias = models.ManyToManyField('Materia', symmetrical=False, blank=True)
-    def __str__(self):
-        return f"{self.nombre_profesor}{self.apellido_profesor}"
