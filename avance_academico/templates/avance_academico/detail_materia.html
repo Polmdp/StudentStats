@@ -6,12 +6,14 @@
 </head>
 <body>
 <ul>
-    <li><a>Año: {{ materia.anio }}</a></li>
-     <li><a>Duracion: {{ materia.duracion }}</a></li>
-    <li><a>Correlativas:</a></li>
+    <li><h3>Año: {{ materia.anio }}</h3></li>
+    <li><h3>Nombre: {{ profesor.nombre_profesor }}</h3></li>
+     <li><h3>Duracion: {{ materia.duracion }}</h3></li>
+    <li><h3>Correlativas:</h3></li>
     {% for correlativa in materia.correlativas.all %}
-    <li><a>{{correlativa.nombre}},Año: {{ correlativa.anio }}, Tipo: {{ correlativa.duracion }} </a> </li>
+    <li><h4>{{correlativa.nombre}},Año: {{ correlativa.anio }}, Tipo: {{ correlativa.duracion }} </h4> </li>
 {% endfor %}
+<a href = "{% url 'avance_academico:lista-materias' %}"class="btn btn-warning">volver a Listar materias</a>
 </ul>
 </body>
 </html>

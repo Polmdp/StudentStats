@@ -12,6 +12,7 @@
         <li><a href="{% url 'avance_academico:detail-profesor' profesor.id%}"
                    class="badge badge-secondary"> {{ profesor.nombre_profesor }}  {{profesor.apellido_profesor }} </a>
         </li>
+        <a href = "{% url 'avance_academico:edita profesor' profesor.id%}"class="btn btn-warning"> Editar</a>
     {% endfor %}
 {% else %}
     <p></p>
