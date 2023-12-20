@@ -14,8 +14,10 @@
     <ul>
         {% for materia in materia_list %}
 
-            <li><a href="{% url 'avance_academico:detail-materia' materia.id %}"
-                   class="badge badge-secondary"> {{ materia.nombre }} </a>
+            <li>
+             <a href="{% url 'avance_academico:edita-materia' materia.id %}" class="btn btn-success"> Editar </a>
+                <a href="{% url 'avance_academico:detail-materia' materia.id %}"
+                   class="btn btn-info"> {{ materia.nombre }} </a>
             </li>
         {% endfor %}
     </ul>

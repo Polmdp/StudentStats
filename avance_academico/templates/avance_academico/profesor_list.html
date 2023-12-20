@@ -9,10 +9,13 @@
 {% if profesor_list %}
 <ul>
     {% for profesor in profesor_list %}
-        <li><a href="{% url 'avance_academico:detail-profesor' profesor.id%}"
-                   class="badge badge-secondary"> {{ profesor.nombre_profesor }}  {{profesor.apellido_profesor }} </a>
+        <li>
+        <a href="{% url 'avance_academico:edita-profesor-form' profesor.id %}" class="btn btn-success"> Editar </a>
+        <a href="{% url 'avance_academico:detail-profesor' profesor.id%}"
+                   class="btn btn-info"> {{ profesor.nombre_profesor }}  {{profesor.apellido_profesor }} </a>
         </li>
     {% endfor %}
+    <a href = "{% url 'avance_academico:agrega-profesor' %}"class="btn btn-warning"> Agregar Profesor</a>
 {% else %}
     <p></p>
 {% endif %}
