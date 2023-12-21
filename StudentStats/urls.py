@@ -17,7 +17,10 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from avance_academico import views
+
 urlpatterns = [
     path("avance_academico/", include("avance_academico.urls")),
-    path("admin/", admin.site.urls)
+    path("admin/", admin.site.urls),
+    path("login/",views.login.as_view(),name="login")
 ]

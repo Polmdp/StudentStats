@@ -1,0 +1,26 @@
+{% extends "avance_academico/base.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+{% if profesor_list %}
+    <ul>
+        {% for profesor in profesor_list %}
+            <li>
+            <a href="{% url 'avance_academico:editaprofesor' profesor.id %}" class="btn btn-success"> Editar </a>
+            <a href="{% url 'avance_academico:detail-profesor' profesor.id%}"
+                       class="btn btn-info"> {{ profesor.nombre_profesor }}  {{profesor.apellido_profesor }} </a>
+            </li>
+        {% endfor %}
+        <a href = "{% url 'avance_academico:agrega-profesor' %}"class="btn btn-warning"> Agregar Profesor</a>
+    {% else %}
+        <p></p>
+    {% endif %}
+    </ul>
+</body>
+</html>
+{% endblock %}

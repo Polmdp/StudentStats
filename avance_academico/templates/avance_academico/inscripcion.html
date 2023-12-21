@@ -1,10 +1,10 @@
-
+{% extends "avance_academico/base.html" %}
+{% block content %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
 
 
 </head>
@@ -14,10 +14,11 @@
     <ul>
         {% for materia in materia_list %}
 
-            <li><a href="{% url 'avance_academico:detail-materia' materia.id %}"
+            <li><a href = "{% url 'avance_academico:confirmacion' materia.id%} " class="btn btn-warning"> Inscribirse</a>
+                <a href="{% url 'avance_academico:detail-materia' materia.id %}"
                    class="badge badge-secondary"> {{ materia.nombre }} </a>
             </li>
-            <a href = "{% url 'avance_academico:editamateria' materia.id%} " class="btn btn-warning"> Editar</a>
+
         {% endfor %}
     </ul>
 {% else %}
@@ -25,3 +26,4 @@
 {% endif %}
 </body>
 </html>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "avance_academico/base.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+
+</head>
+<body>
+{% if materia_list %}
+
+        <ul>
+            {% for materia in materia_list %}
+
+                <li>
+                  <a href="{% url 'avance_academico:editamateria' materia.id %}" class="btn btn-success"> Editar </a>
+                    <a href="{% url 'avance_academico:detail-materia' materia.id %}"
+                       class="btn btn-info"> {{ materia.nombre }} </a>
+
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p></p>
+    {% endif %}
+</body>
+</html>
+{% endblock %}

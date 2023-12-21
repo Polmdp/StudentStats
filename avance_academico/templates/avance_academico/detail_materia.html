@@ -1,3 +1,5 @@
+{% extends "avance_academico/base.html" %}
+{% block content %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,7 +15,12 @@
     {% for correlativa in materia.correlativas.all %}
     <li><h4>{{correlativa.nombre}},Año: {{ correlativa.anio }}, Tipo: {{ correlativa.duracion }} </h4> </li>
 {% endfor %}
+    <li><h3>Profesores: </h3></li>
+    {% for profesor in profesores%}
+    <li><h5>{{ profesor}}</h5></li>
+{% endfor %}
 <a href = "{% url 'avance_academico:lista-materias' %}"class="btn btn-warning">volver a Listar materias</a>
 </ul>
 </body>
 </html>
+{% endblock %}

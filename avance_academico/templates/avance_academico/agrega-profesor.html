@@ -1,4 +1,6 @@
-<form action="../../../avance_academico/templates/avance_academico" method="post">
+{% extends "avance_academico/base.html" %}
+{% block content %}
+<form action="." method="post">
     {% csrf_token %}
 
     {% for field in form %}
@@ -10,3 +12,4 @@
     <input type="submit" value="Submit">
 <a href = "{% url 'avance_academico:lista-profesores' %}"class="btn btn-warning"> volver a la lista</a>
 </form>
+{% endblock %}
