@@ -8,6 +8,8 @@ from django.shortcuts import render
 
 from django.views import generic
 
+from materia.models import Materia
+
 
 class IndexView(generic.ListView):
     template_name = "avance_academico/index.html"
