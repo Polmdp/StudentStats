@@ -46,14 +46,8 @@ class Profesor(models.Model):
         return f"{self.nombre_profesor}{self.apellido_profesor}"
 
 class MateriaCursada(models.Model):
-    Tipo = (
-        ('ANUAL', 'ANUAL'),
-        ('PRIMER CUATRIMESTRE', 'PRIMER CUATRIMESTRE'),
-        ('SEGUNDO CUATRIMESTRE', 'SEGUNDO CUATRIMESTRE')
-    )
     estudiante=models.ForeignKey(Estudiante,on_delete=models.CASCADE)
     materia=models.ForeignKey(Materia,on_delete=models.CASCADE)
-    tipo_cursada = models.CharField(max_length=50, choices=Tipo, null=True, blank=True)
     veces_recursada=models.IntegerField(default=0)
     aprobada=models.BooleanField(default=0)
     en_curso=models.BooleanField(default=0)

@@ -1,3 +1,4 @@
+from tkinter import INSERT
 from urllib import request
 
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -13,19 +14,20 @@ from .forms import  ProfesorModel, MateriaModel
 # Create your views here.
 
 from django.views import generic
-from .models import Materia, Profesor,Estudiante
+from .models import Materia, Profesor,Estudiante,MateriaCursada
 
 
 def VerificaIncripcion(request,id):
         estudiante = Estudiante.objects.get(user=request.user)
         materia = get_object_or_404(Materia, pk=id)
         correlativas=materia.correlativas.all()
-        correlativas_no_aprobadas = correlativas.exclude(id__in=estudiante.materias_aprobadas.all())
+        correlativas_no_aprobadas = correlativas.exclude(id__in=MateriaCursada.objects.filter(estudiante=estudiante,aprobada=1))
 
         if len(correlativas_no_aprobadas)==0:
-            estudiante.materias_en_curso.add(materia)
+
             return redirect("avance_academico:index")
         else:
+           # ACA DEBERIA AGREGARLO A LA BASE DE DATOS
             return render(request,template_name="avance_academico/error-anotacion.html",context={"correlativas_no_aprobadas":correlativas_no_aprobadas})
 
 
@@ -35,8 +37,10 @@ class AnotaMaterias(LoginRequiredMixin,generic.ListView):
     context_object_name = "materias_disponibles"
     def get_queryset(self):
         estudiante= Estudiante.objects.get(user=self.request.user)
-        materias_disponibles=Materia.objects.exclude(id__in=estudiante.materias_aprobadas.all()).order_by("anio")
-        return materias_disponibles.exclude(id__in=estudiante.materias_en_curso.all())
+        materias_no_disponibles=MateriaCursada.objects.filter(estudiante=estudiante)
+        materias_no_disponibles_ids = [materia_cursada.materia_id for materia_cursada in materias_no_disponibles]
+        materias = Materia.objects.exclude(id__in=materias_no_disponibles_ids)
+        return materias
 class MyLoginView(LoginView):
     template_name = "avance_academico/login.html"
     redirect_authenticated_user = True
@@ -64,8 +68,10 @@ class ListaMaterias(LoginRequiredMixin,generic.ListView):
     def get_queryset(self):
         """Muestra materias"""
         estudiante= Estudiante.objects.get(user=self.request.user)
-        return estudiante.materias_aprobadas.all().order_by("anio")
-
+        materias_aprobadas=MateriaCursada.objects.filter(estudiante_id=estudiante.id,aprobada=1)
+        materias_aprobadas_ids = [materia_cursada.materia_id for materia_cursada in materias_aprobadas]
+        materias=Materia.objects.filter(id__in=materias_aprobadas_ids)
+        return materias
 
 class ListaProfesores(LoginRequiredMixin,generic.ListView):
     template_name = "avance_academico/profesor_list.html"
