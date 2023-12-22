@@ -1,17 +1,20 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-<ul>
-    <li><a>Nombre: {{ profesor.nombre_profesor }}</a></li>
-     <li><a>Apellido: {{profesor.apellido_profesor }}</a></li>
-    <li><a>Materias:</a></li>
-    {% for materia in profesor.materias.all %}
-    <li><a>{{materia.nombre}}</a> </li>
-{% endfor %}
-</ul>
-</body>
-</html>
+{% extends "avance_academico/base.html" %}
+{% block content %}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+    </head>
+    <body>
+    <ul>
+        <li><a>Nombre: {{ profesor.nombre_profesor }}</a></li>
+         <li><a>Apellido: {{profesor.apellido_profesor }}</a></li>
+        <li><a>Materias:</a></li>
+        {% for materia in profesor.materias.all %}
+        <li><a>{{materia.nombre}}</a> </li>
+    {% endfor %}
+    </ul>
+    </body>
+    </html>
+{% endblock %}

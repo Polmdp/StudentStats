@@ -1,19 +1,22 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-<form action="." method="post">
-    {% csrf_token %}
-    {% for field in form %}
-    <div class="fieldWrapper">
-        {{ field.errors }}
-        <h3>{{ field.label_tag }}</h3>{{ field }}
-    </div>
-{% endfor %}
-    <input type="submit" value="Submit">
-</form>
-</body>
-</html>
+{% extends "avance_academico/base.html" %}
+{% block content %}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+    </head>
+    <body>
+    <form action="." method="post">
+        {% csrf_token %}
+        {% for field in form %}
+        <div class="fieldWrapper">
+            {{ field.errors }}
+            <h3>{{ field.label_tag }}</h3>{{ field }}
+        </div>
+    {% endfor %}
+        <input type="submit" value="Submit">
+    </form>
+    </body>
+    </html>
+{% endblock %}

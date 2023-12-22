@@ -1,18 +1,28 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-<ul>
-    <li><h3>Año: {{ materia.anio }}</h3></li>
-    <li><h3>Nombre: {{ profesor.nombre_profesor }}</h3></li>
-     <li><h3>Duracion: {{ materia.duracion }}</h3></li>
-    <li><h3>Correlativas:</h3></li>
-    {% for correlativa in materia.correlativas.all %}
-    <li><h4>{{correlativa.nombre}},Año: {{ correlativa.anio }}, Tipo: {{ correlativa.duracion }} </h4> </li>
-{% endfor %}
-</ul>
-</body>
-</html>
+{% extends "avance_academico/base.html" %}
+{% block content %}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+    </head>
+    <body>
+    <ul>
+        <li><h3>Año: {{ materia.anio }}</h3></li>
+        <li><h3>Nombre: {{ profesor.nombre_profesor }}</h3></li>
+         <li><h3>Duracion: {{ materia.duracion }}</h3></li>
+         <li><h3>Profesores:</h3></li>
+         {% for profesor in profesores %}
+              <li><h5>{{ profesor.nombre_profesor }} {{ profesor.apellido_profesor }}</h5></li>
+        {% endfor %}
+
+
+
+        <li><h3>Correlativas:</h3></li>
+        {% for correlativa in materia.correlativas.all %}
+        <li><h4>{{correlativa.nombre}},Año: {{ correlativa.anio }}, Tipo: {{ correlativa.duracion }} </h4> </li>
+    {% endfor %}
+    </ul>
+    </body>
+    </html>
+{% endblock %}

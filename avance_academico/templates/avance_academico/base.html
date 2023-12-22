@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Scripts de Bootstrap (incluye jQuery y Popper.js) -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+    <title>{% block title %}Student Stats{% endblock %}</title>
+    {% block extra_css %}
+    {% endblock %}
+</head>
+<body>
+<header>
+    <!-- Aquí puedes incluir una barra de navegación o cualquier otra cabecera común -->
+    {% include 'avance_academico/navbar.html' %}
+
+</header>
+
+<main role="main" class="container">
+    {% block content %}
+        <!-- El contenido específico de cada página irá aquí -->
+    {% endblock %}
+</main>
+
+<footer>
+    <!-- Pie de página común, si es necesario -->
+</footer>
+
+<!-- Scripts comunes a todas las páginas -->
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+{% block extra_js %}
+{% endblock %}
+</body>
+</html>

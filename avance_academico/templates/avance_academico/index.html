@@ -1,13 +1,18 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
-    <title>Materias</title>
-</head>
-<body>
-<a href = "{% url 'avance_academico:lista-materias' %}"class="btn btn-warning"> Listar materias</a>
-<a href = "{% url 'avance_academico:lista-profesores' %}"class="btn btn-warning"> Listar profesores</a>
+{% extends "avance_academico/base.html" %}
+{% block content %}
 
-</body>
-</html>
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Materias</title>
+    </head>
+    <body>
+    <a href = "{% url 'avance_academico:lista-materias' %}"class="btn btn-warning"> Listar materias</a>
+    <a href = "{% url 'avance_academico:lista-profesores' %}"class="btn btn-warning"> Listar profesores</a>
+    <a href = "{% url 'avance_academico:anota-materias' %}"class="btn btn-warning"> Anotarse a materias</a>
+
+
+    </body>
+    </html>
+{% endblock %}

@@ -7,22 +7,15 @@
         <title>Title</title>
     </head>
     <body>
-    {% if materia_list %}
-
-        <ul>
-            {% for materia in materia_list %}
-
-                <li>
-                  <a href="{% url 'avance_academico:edita-materia' materia.id %}" class="btn btn-success"> Editar </a>
+        {% for materia in materias_disponibles %}
+            <li>
                     <a href="{% url 'avance_academico:detail-materia' materia.id %}"
                        class="btn btn-info"> {{ materia.nombre }} </a>
+                    <a href="{% url 'avance_academico:verifica-inscripcion' materia.id %}"
+                       class="btn btn-info"> Anotarse </a>
 
                 </li>
-            {% endfor %}
-        </ul>
-    {% else %}
-        <p></p>
-    {% endif %}
+        {% endfor %}
     </body>
     </html>
 {% endblock %}

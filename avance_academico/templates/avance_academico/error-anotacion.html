@@ -1,0 +1,18 @@
+{% extends "avance_academico/base.html" %}
+{% block content %}
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+    </head>
+    <body>
+        <a><h3>ERROR</h3></a>
+                <a>Debe las siguientes materias: </a>
+                <ul>{% for materia in correlativas_no_aprobadas %}
+                    <li><a> {{ materia.nombre }}</a></li>
+                {% endfor %}</ul>
+            <a href = "{% url 'avance_academico:anota-materias' %} " class="btn btn-outline-secondary"> Volver a las Inscripciones</a></li>
+    </body>
+    </html>
+{% endblock %}
