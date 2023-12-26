@@ -5,7 +5,16 @@
     <head>
         <meta charset="UTF-8">
         <title>Title</title>
+        <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+
     </head>
+    <style>
+    #grafo {
+        width: 100%; /* O un valor fijo como 800px */
+        height: 600px; /* Ajusta la altura según sea necesario */
+        /* border: 1px solid #666; Opcional, para visualizar los límites del contenedor */
+    }
+</style>
     <body>
     <ul>
         <li><h3>Año: {{ materia.anio }}</h3></li>
@@ -15,13 +24,62 @@
          {% for profesor in profesores %}
               <li><h5>{{ profesor.nombre_profesor }} {{ profesor.apellido_profesor }}</h5></li>
         {% endfor %}
-
-
-
+        <li><h3>Historial:</h3></li>
+        {% for parcial in calificaciones %}
+            <li>{{parcial.tipo}} : {{ parcial.nota }}</li>
+        {% endfor %}
         <li><h3>Correlativas:</h3></li>
-        {% for correlativa in materia.correlativas.all %}
-        <li><h4>{{correlativa.nombre}},Año: {{ correlativa.anio }}, Tipo: {{ correlativa.duracion }} </h4> </li>
-    {% endfor %}
+      {# {% for correlativa in materia.correlativas.all %}<li><h4>{{ correlativa.nombre }},Año: {{ correlativa.anio }}, Tipo: {{ correlativa.duracion }} </h4></li>{% endfor %}#}
+            <div id="grafo"></div>
+    <script>
+        // Código JavaScript para renderizar el grafo
+        var grafo_data = '{{ grafo_json|safe }}';
+
+        document.addEventListener('DOMContentLoaded', function () {
+            // Parsear los datos del grafo
+            var datos = JSON.parse(grafo_data);
+
+            // Opciones adicionales para personalizar nodos y aristas
+    var opciones = {
+        nodes: {
+            shape: 'dot',
+            size: 30,  // Tamaño más grande de los nodos
+            font: {
+                size: 20  // Tamaño de fuente más grande para etiquetas
+            }
+        },
+        edges: {
+            width: 2,  // Aristas más gruesas
+            arrows: {
+                to: {enabled: true, scaleFactor: 1.5}  // Flechas más grandes
+            }
+        },
+        layout: {
+            hierarchical: {
+                direction: 'DU',
+                sortMethod: 'directed'
+            }
+        },
+        physics: {
+            enabled: true,  // Habilita o ajusta la física para espaciar los nodos
+        },
+        interaction: { hover: true }
+    };
+
+            // Crear el grafo y asignarlo al contenedor
+            var contenedor = document.getElementById('grafo');
+            var grafo = new vis.Network(contenedor, datos, opciones);
+
+            // Agregar eventos a los nodos si es necesario
+            grafo.on("click", function (params) {
+                if (params.nodes.length > 0) {
+                    var nodeId = params.nodes[0];
+                    console.log('Nodo clickeado:', nodeId);
+                    // Aquí puedes añadir más lógica, como mostrar detalles del nodo
+                }
+            });
+        });
+    </script>
     </ul>
     </body>
     </html>

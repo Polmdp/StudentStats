@@ -13,9 +13,9 @@
             {% for materia in materia_list %}
 
                 <li>
-                  <a href="{% url 'avance_academico:edita-materia' materia.id %}" class="btn btn-success"> Editar </a>
-                    <a href="{% url 'avance_academico:detail-materia' materia.id %}"
-                       class="btn btn-info"> {{ materia.nombre }} </a>
+                  <div style="font:small">{{ materia.nombre }} <a
+                          href="{% url 'avance_academico:detail-materia' materia.id %}"
+                          class="btn btn-primary btn-sm"> Detalle </a></div>
 
                 </li>
             {% endfor %}

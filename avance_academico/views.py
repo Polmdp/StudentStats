@@ -1,3 +1,4 @@
+import json
 from tkinter import INSERT
 from urllib import request
 
@@ -14,23 +15,29 @@ from .forms import  ProfesorModel, MateriaModel
 # Create your views here.
 
 from django.views import generic
-from .models import Materia, Profesor,Estudiante,MateriaCursada
+from .models import Materia, Profesor,Estudiante,MateriaCursada,Calificacion
+import networkx as nx
 
 
-def VerificaIncripcion(request,id):
+def Estadocarrera(request):
         estudiante = Estudiante.objects.get(user=request.user)
-        materia = get_object_or_404(Materia, pk=id)
-        correlativas=materia.correlativas.all()
-        correlativas_no_aprobadas = correlativas.exclude(id__in=MateriaCursada.objects.filter(estudiante=estudiante,aprobada=1))
-
-        if len(correlativas_no_aprobadas)==0:
-
-            return redirect("avance_academico:index")
-        else:
-           # ACA DEBERIA AGREGARLO A LA BASE DE DATOS
-            return render(request,template_name="avance_academico/error-anotacion.html",context={"correlativas_no_aprobadas":correlativas_no_aprobadas})
+        cant_materias= len(Materia.objects.all())
+        materias_aprobadas=len(MateriaCursada.objects.filter(aprobada=True,estudiante=estudiante).all())
+        porcentaje=materias_aprobadas/cant_materias*100
+        return render(request,"avance_academico/estado-carrera.html",{"estudiante":estudiante,"cant_materias":cant_materias,"cant_aprobadas":materias_aprobadas,"porcentaje":porcentaje})
 
 
+def VerificaIncripcion(request, id):
+    estudiante = Estudiante.objects.get(user=request.user)
+    materia = get_object_or_404(Materia, pk=id)
+    correlativas = materia.correlativas.all()
+    correlativas_no_aprobadas = correlativas.exclude( id__in=MateriaCursada.objects.filter(estudiante=estudiante, aprobada=True).values_list('materia_id', flat=True))
+    if not correlativas_no_aprobadas:
+        MateriaCursada.objects.create(estudiante=estudiante, materia=materia)
+        return redirect("avance_academico:index")
+    else:
+        return render(request, template_name="avance_academico/error-anotacion.html",
+                      context={"correlativas_no_aprobadas": correlativas_no_aprobadas})
 
 class AnotaMaterias(LoginRequiredMixin,generic.ListView):
     template_name = "avance_academico/anotarse-materias.html"
@@ -84,7 +91,11 @@ class ListaProfesores(LoginRequiredMixin,generic.ListView):
 def detallemateria(request, id):
     materia = get_object_or_404(Materia, pk=id)
     profesores=Profesor.objects.filter(materias=materia.id)
-    return render(request, "avance_academico/detail_materia.html", {"materia": materia,"profesores":profesores})
+    materia_cursada=MateriaCursada.objects.get(materia=materia)
+    calificaciones=Calificacion.objects.filter(materia_cursada_id=materia_cursada.id)
+    grafo = construir_grafo(id)
+    grafo_json = grafo_to_json(grafo)
+    return render(request, "avance_academico/detail_materia.html", {"materia": materia,"profesores":profesores,"calificaciones":calificaciones,"grafo_json":grafo_json})
 
 
 def detalleprofesor(request, id):
@@ -143,3 +154,26 @@ def editarmateria(request,id):
         form = MateriaModel(instance=materia)
 
     return render(request, "avance_academico/edita-datos.html", {"form": form})
+def construir_grafo(materia_id):
+    grafo = nx.DiGraph()
+    materias = Materia.objects.filter(id=materia_id)
+
+    def agregar_correlativas(materia):
+        for correlativa in materia.correlativas.all():
+            grafo.add_edge(correlativa.nombre, materia.nombre)
+            agregar_correlativas(correlativa)
+
+    for materia in materias:
+        grafo.add_node(materia.nombre)
+        agregar_correlativas(materia)
+
+    return grafo
+
+
+
+def grafo_to_json(grafo):
+    nodes = [{"id": node, "label": node} for node in grafo.nodes()]
+    edges = [{"from": u, "to": v} for u, v in grafo.edges()]
+    return json.dumps({"nodes": nodes, "edges": edges})
+
+
