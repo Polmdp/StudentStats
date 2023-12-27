@@ -11,7 +11,6 @@
 
         <ul>
             {% for materia in materia_list %}
-
                 <li>
                   <div style="font:small">{{ materia.nombre }} <a
                           href="{% url 'avance_academico:detail-materia' materia.id %}"

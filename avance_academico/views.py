@@ -10,6 +10,7 @@ from django.shortcuts import render
 from django.urls import reverse_lazy
 from pyexpat.errors import messages
 
+from django import forms
 from .forms import  ProfesorModel, MateriaModel
 
 # Create your views here.
@@ -22,9 +23,18 @@ import networkx as nx
 def Estadocarrera(request):
         estudiante = Estudiante.objects.get(user=request.user)
         cant_materias= len(Materia.objects.all())
-        materias_aprobadas=len(MateriaCursada.objects.filter(aprobada=True,estudiante=estudiante).all())
+        materias_aprobad=MateriaCursada.objects.filter(aprobada=True,estudiante=estudiante).all()
+        materias_aprobadas= len(materias_aprobad)
         porcentaje=materias_aprobadas/cant_materias*100
-        return render(request,"avance_academico/estado-carrera.html",{"estudiante":estudiante,"cant_materias":cant_materias,"cant_aprobadas":materias_aprobadas,"porcentaje":porcentaje})
+        aprobadas_finales = Calificacion.objects.filter( tipo="FINAL",nota__gte=4)
+        if request.method=="POST":
+            form = Cantaños(request.POST)
+            cursa_materias= form.data.get("cant_años")
+        else:
+            form=Cantaños()
+
+        cant_años_calculados=int((cant_materias-materias_aprobadas)/int(cursa_materias))
+        return render(request,"avance_academico/estado-carrera.html",{"estudiante":estudiante,"cant_materias":cant_materias,"materias_aprobadas":materias_aprobad,"cant_aprobadas":materias_aprobadas,"porcentaje":porcentaje,"aprobadas_finales":aprobadas_finales,"form":form,"cant_años_calculados":cant_años_calculados})
 
 
 def VerificaIncripcion(request, id):
@@ -113,7 +123,6 @@ def agrega_profesor(request):
             # profesor=Profesor.objects.create(nombre_profesor=nombre,apellido_profesor=apellido)
 
             profesor = form_model.save()
-
             return redirect("avance_academico:detail-profesor", profesor.id)
 
     else:
@@ -176,4 +185,5 @@ def grafo_to_json(grafo):
     edges = [{"from": u, "to": v} for u, v in grafo.edges()]
     return json.dumps({"nodes": nodes, "edges": edges})
 
-
+class Cantaños(forms.Form):
+    cant_años = forms.IntegerField(label="Cantidad de materias que desea cursar",max_value=20,min_value=1)

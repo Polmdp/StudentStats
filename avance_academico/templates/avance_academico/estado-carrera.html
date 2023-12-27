@@ -5,9 +5,24 @@
     <title>Title</title>
 </head>
 <body>
-<li><h3>Cantidad de materias aprobadas: {{ cant_aprobadas }}</h3></li>
-<li><h3>Cantidad de materias carrera: {{ cant_materias }}</h3></li>
-<li><h3>Porcentaje de la carrera: {{porcentaje}}%</h3></li>
+<h3>Cantidad de materias aprobadas: {{ cant_aprobadas }}</h3>
 
+<h3>Cantidad de materias carrera: {{ cant_materias }}</h3>
+
+<h3>Porcentaje de la carrera: {{porcentaje}}%</h3>
+
+<h3>Materias aprobadas</h3>
+{% for materia in aprobadas_finales %}
+    <li>{{ materia.materia_cursada.materia.nombre }} {{ materia.nota }}</li>
+{% endfor %}
+<h1></h1>
+<h1></h1>
+<h1></h1>
+<form action="." method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Enviar">
+    <h3>La cantidad de años calculados es {{ cant_años_calculados }}</h3>
+</form>
 </body>
 </html>
