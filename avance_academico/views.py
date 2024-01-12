@@ -5,8 +5,6 @@ from urllib import request
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.shortcuts import render, get_object_or_404, redirect
-from django.http import HttpResponseRedirect
-from django.shortcuts import render
 from django.urls import reverse_lazy
 from pyexpat.errors import messages
 
@@ -19,6 +17,8 @@ from django.views import generic
 from .models import Materia, Profesor,Estudiante,MateriaCursada,Calificacion
 import networkx as nx
 
+def ValidaDatos(request):
+        return render(request,"avance_academico/valida-datos.html")
 
 def Estadocarrera(request):
         estudiante = Estudiante.objects.get(user=request.user)
@@ -30,11 +30,20 @@ def Estadocarrera(request):
         if request.method=="POST":
             form = Cantaños(request.POST)
             cursa_materias= form.data.get("cant_años")
+            cant_años_calculados = int((cant_materias - materias_aprobadas) / int(cursa_materias))
+
+            return render(request, "avance_academico/estado-carrera.html",
+                          {"estudiante": estudiante, "cant_materias": cant_materias,
+                           "materias_aprobadas": materias_aprobad, "cant_aprobadas": materias_aprobadas,
+                           "porcentaje": porcentaje, "aprobadas_finales": aprobadas_finales, "form": form,
+                           "cant_años_calculados": cant_años_calculados})
         else:
             form=Cantaños()
-
-        cant_años_calculados=int((cant_materias-materias_aprobadas)/int(cursa_materias))
-        return render(request,"avance_academico/estado-carrera.html",{"estudiante":estudiante,"cant_materias":cant_materias,"materias_aprobadas":materias_aprobad,"cant_aprobadas":materias_aprobadas,"porcentaje":porcentaje,"aprobadas_finales":aprobadas_finales,"form":form,"cant_años_calculados":cant_años_calculados})
+            return render(request, "avance_academico/estado-carrera.html",
+                          {"estudiante": estudiante, "cant_materias": cant_materias,
+                           "materias_aprobadas": materias_aprobad, "cant_aprobadas": materias_aprobadas,
+                           "porcentaje": porcentaje, "aprobadas_finales": aprobadas_finales, "form": form,
+                           })
 
 
 def VerificaIncripcion(request, id):

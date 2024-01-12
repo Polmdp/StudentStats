@@ -15,6 +15,7 @@ urlpatterns = [
     path("editamateria-<int:id>/",views.editarmateria,name="edita-materia"),
     path("anotamateria",views.AnotaMaterias.as_view(),name="anota-materias"),
     path("comprobacion<int:id>/",views.VerificaIncripcion,name="verifica-inscripcion"),
-    path("estado_carrera/",views.Estadocarrera,name="estado-carrera")
+    path("estado_carrera/",views.Estadocarrera,name="estado-carrera"),
+    path("validadatos/",views.ValidaDatos,name="ingresa-datos")
 
 ]
