@@ -1,27 +1,71 @@
 {% extends "avance_academico/base.html" %}
 {% block content %}
-    <!DOCTYPE html>
+    <!doctype html>
     <html lang="en">
     <head>
         <meta charset="UTF-8">
-        <title>Title</title>
+        <title>Filtro de elementos</title>
     </head>
     <body>
     {% if materia_list %}
-
+        <input type="text" name="buscador" id="buscador" placeholder="Buscar...">
         <ul>
-            {% for materia in materia_list %}
-                <li>
-                  <div style="font:small">{{ materia.nombre }} <a
-                          href="{% url 'avance_academico:detail-materia' materia.id %}"
-                          class="btn btn-primary btn-sm"> Detalle </a></div>
 
+            {% for materia in materia_list %}
+                <li class="materia" data-nombre="{{ materia.nombre }}">{{ materia.nombre }}
+                    <a href="{% url 'avance_academico:detail-materia' materia.id %}"
+                       class="btn btn-primary btn-sm"> Detalle </a>
                 </li>
             {% endfor %}
+            <input type="submit" id="submit" value="Enviar">
+
         </ul>
     {% else %}
         <p></p>
     {% endif %}
     </body>
     </html>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+            var input = document.getElementById("buscador");
+            input.addEventListener("keyup", function () {
+                var filtro = input.value.toLowerCase();
+                var items = document.querySelectorAll('.materia');
+                var encuentra=false;
+                items.forEach(function (item) {
+                    if (item.dataset.nombre.toLowerCase().includes(filtro)) {
+                        item.style.display = "";
+                        encuentra=true;
+
+                    } else {
+                        item.style.display = "none";
+                    }
+                });
+                document.getElementById('submit').addEventListener('click', function (e) {
+                    if (encuentra) {
+                        Swal.fire({
+                            title: "Genial",
+                            text: "Se encontró una materia",
+                            imageUrl: 'https://www.lacomuderacing.com/wp-content/uploads/2019/09/El-Cilindro-de-Avellaneda.jpg',
+                            imageWidth: 400,
+                            imageHeight: 200,
+                            imageAlt: "Custom image"
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: "No se encontró ninguna materia",
+                        });
+                    }
+
+                })
+            });
+
+        });
+
+
+    </script>
+
 {% endblock %}
