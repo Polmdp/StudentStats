@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 from tkinter import INSERT
 from urllib import request
 
@@ -22,8 +23,12 @@ import networkx as nx
 
 def ValidaDatos(request):
     return render(request, "avance_academico/valida-datos.html")
+
+
 def errorAnotacion(materias_faltantes):
-    return render(request,template_name="avance_academico/error-anotacion.html",context={"correlativas_no_aprobadas":materias_faltantes})
+    return render(request, template_name="avance_academico/error-anotacion.html",
+                  context={"correlativas_no_aprobadas": materias_faltantes})
+
 
 def Estadocarrera(request):
     estudiante = Estudiante.objects.get(user=request.user)
@@ -51,27 +56,37 @@ def Estadocarrera(request):
                        })
 
 
-
-
 def VerificaIncripcion(request, id):
     estudiante = Estudiante.objects.get(user=request.user)
     materia = get_object_or_404(Materia, pk=id)
     correlativas = materia.correlativas.all()
     correlativas_no_aprobadas = correlativas.exclude(
         id__in=MateriaCursada.objects.filter(estudiante=estudiante, aprobada=True).values_list('materia_id', flat=True))
-    if not correlativas_no_aprobadas:
-        MateriaCursada.objects.create(estudiante=estudiante, materia=materia, en_curso=1)
 
-        return JsonResponse({"success": True})
+    materias_encurso=MateriaCursada.objects.filter(estudiante=estudiante, en_curso=1)
+    materias_encurso_ids = [materia.materia_id for materia in materias_encurso]
+    materias = Materia.objects.filter(id__in=materias_encurso_ids).all()
+    materias_iguales = materias.filter(horario__contains=materia.horario, dia__contains=materia.dia)
 
-    else:
-        lista_materias_nombre = [correlativa.nombre for correlativa in correlativas_no_aprobadas]
+    if materias_iguales.exists():
+        mensaje = f"Error en la inscripción, coincide con la(s) materia(s): {', '.join(str(materia.nombre) for materia in materias_iguales)}"
         return JsonResponse({
             "success": False,
-            "message": "Error en la inscripción",
-            "details": {"correlativas_no_aprobadas": lista_materias_nombre}
+            "message": mensaje,
         })
+    else:
+        if not correlativas_no_aprobadas:
+            MateriaCursada.objects.create(estudiante=estudiante, materia=materia, en_curso=1)
 
+            return JsonResponse({"success": True})
+
+        else:
+            lista_materias_nombre = [correlativa.nombre for correlativa in correlativas_no_aprobadas]
+            return JsonResponse({
+                "success": False,
+                "message": "Error en la inscripción",
+                "details": {"correlativas_no_aprobadas": lista_materias_nombre}
+            })
 
 
 class AnotaMaterias(LoginRequiredMixin, generic.ListView):
@@ -82,7 +97,20 @@ class AnotaMaterias(LoginRequiredMixin, generic.ListView):
         estudiante = Estudiante.objects.get(user=self.request.user)
         materias_no_disponibles = MateriaCursada.objects.filter(estudiante=estudiante)
         materias_no_disponibles_ids = [materia_cursada.materia_id for materia_cursada in materias_no_disponibles]
-        materias = Materia.objects.exclude(id__in=materias_no_disponibles_ids)
+        fecha_actual = datetime.now()
+        fecha_limite_primercuatri = datetime(2024, 4, 1)
+        fecha_inicio_segundocuatri = datetime(2024, 7, 1)
+        fecha_limite_segundocuatri = datetime(2024, 7, 25)
+        if fecha_actual <= fecha_limite_primercuatri:
+            materias = Materia.objects.exclude(id__in=materias_no_disponibles_ids).exclude(
+                duracion="SEGUNDO CUATRIMESTRE")
+
+        elif fecha_actual < fecha_inicio_segundocuatri or fecha_actual > fecha_limite_segundocuatri:
+            materias = []
+        else:
+            materias = Materia.objects.exclude(id__in=materias_no_disponibles_ids).filter(
+                duracion="SEGUNDO CUATRIMESTRE")
+
         return materias
 
 
@@ -105,6 +133,8 @@ class IndexView(generic.ListView):
     def get_queryset(self):
         """Return the last five published questions."""
         return Materia.objects.order_by("-anio")[:50]
+
+
 @require_GET
 def buscar_materia(request):
     query = request.GET.get('q', '')
@@ -129,11 +159,15 @@ class ListaMaterias(LoginRequiredMixin, generic.ListView):
         materias = Materia.objects.filter(id__in=materias_aprobadas_ids)
         return materias
 
+
 class MuestraMaterias(generic.ListView):
     template_name = "avance_academico/materias_carrera.html"
     context_object_name = "materia_list"
+
     def get_queryset(self):
         return Materia.objects.order_by("nombre")[:50]
+
+
 class ListaProfesores(LoginRequiredMixin, generic.ListView):
     template_name = "avance_academico/profesor_list.html"
     context_object_name = "profesor_list"
