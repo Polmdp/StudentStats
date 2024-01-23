@@ -16,6 +16,9 @@ urlpatterns = [
     path("anotamateria",views.AnotaMaterias.as_view(),name="anota-materias"),
     path("comprobacion<int:id>/",views.VerificaIncripcion,name="verifica-inscripcion"),
     path("estado_carrera/",views.Estadocarrera,name="estado-carrera"),
-    path("validadatos/",views.ValidaDatos,name="ingresa-datos")
+    path("validadatos/",views.ValidaDatos,name="ingresa-datos"),
+    path('buscar_materia', views.buscar_materia, name='buscar_materia'),
+    path("materias_carrera",views.MuestraMaterias.as_view(),name="muestra_materias"),
+    path("error/",views.errorAnotacion,name="error_anotacion")
 
 ]

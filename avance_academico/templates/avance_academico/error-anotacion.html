@@ -4,15 +4,26 @@
     <html lang="en">
     <head>
         <meta charset="UTF-8">
+                <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+
         <title>Title</title>
     </head>
     <body>
+
+    {% if correlativas_no_aprobadas %}
         <a><h3>ERROR</h3></a>
-                <a>Debe las siguientes materias: </a>
-                <ul>{% for materia in correlativas_no_aprobadas %}
-                    <li><a> {{ materia.nombre }}</a></li>
-                {% endfor %}</ul>
-            <a href = "{% url 'avance_academico:anota-materias' %} " class="btn btn-outline-secondary"> Volver a las Inscripciones</a></li>
+        <a>Debe las siguientes materias: </a>
+        <ul>{% for materia in correlativas_no_aprobadas %}
+            <li><a> {{ materia.nombre }}</a></li>
+        {% endfor %}</ul>
+        <a href="{% url 'avance_academico:anota-materias' %} " class="btn btn-outline-secondary"> Volver a las
+            Inscripciones</a></li>
+    {% else %}
+        <p></p>
+    {% endif %}
+
     </body>
     </html>
+
+
 {% endblock %}

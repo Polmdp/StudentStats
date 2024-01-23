@@ -7,15 +7,81 @@
         <title>Title</title>
     </head>
     <body>
-        {% for materia in materias_disponibles %}
-            <li>
-                    <a href="{% url 'avance_academico:detail-materia' materia.id %}"
-                       class="btn btn-info"> {{ materia.nombre }} </a>
-                    <a href="{% url 'avance_academico:verifica-inscripcion' materia.id %}"
-                       class="btn btn-info"> Anotarse </a>
+    {% for materia in materias_disponibles %}
+        <li>
+            <a href="{% url 'avance_academico:detail-materia' materia.id %}"> {{ materia.nombre }} </a>
 
-                </li>
-        {% endfor %}
+
+
+            <button onclick="anotarseEnMateria({{ materia.id }})" class="btn btn-success">Anotarse
+            </button>
+
+        </li>
+    {% endfor %}
+    <div class="modal fade" id="inscripcionModal" tabindex="-1" aria-labelledby="inscripcionModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="inscripcionModalLabel"> Anotarse</h5>
+                    <button type="button " id="close" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+
+                </div>
+                <div class="modal-body">
+                    <form id="inscripcionForm">
+                        <!-- Los campos del form los vamos a llenar de forma dinamica con JS -->
+                    </form>
+                </div>
+                <div class="modal-footer">
+
+                    <button type="button" id="cerrar" class="btn btn-secondary" data-bs-dismmis="modal"> Cerrar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
     </body>
     </html>
+    <script>
+
+        function anotarseEnMateria(materia_id) {
+            Swal.fire({
+                title: "Estas seguro?",
+                text: "Puedes volver hacia atras",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Si, estoy seguro"
+
+            }).then((result) => {
+                if (result.isConfirmed) {
+                      var url = `{% url 'avance_academico:verifica-inscripcion' 0 %}`.replace('0', materia_id);
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                        title: "Anotacion exitosa",
+                        text: "Te has anotado a una materia",
+                        icon: "success"
+                    });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.message,
+                            footer: JSON.stringify(data.details),  // Show details in the footer
+                        });
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+                }
+            });
+
+
+        }
+
+    </script>
 {% endblock %}

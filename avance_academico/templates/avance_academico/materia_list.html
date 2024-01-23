@@ -4,39 +4,93 @@
     <html lang="en">
     <head>
         <meta charset="UTF-8">
+        <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+
         <title>Filtro de elementos</title>
     </head>
+
     <body>
+    <div id="urlBase" data-url=""></div>
+    <div id="materia_list" {{ materia_list }}></div>
+
     {% if materia_list %}
+
         <input type="text" name="buscador" id="buscador" placeholder="Buscar...">
         <ul>
-
             {% for materia in materia_list %}
-                <li class="materia" data-nombre="{{ materia.nombre }}">{{ materia.nombre }}
-                    <a href="{% url 'avance_academico:detail-materia' materia.id %}"
-                       class="btn btn-primary btn-sm"> Detalle </a>
+                <li class="materia" id="materia" data-nombre="{{ materia.nombre }}">{{ materia.nombre }}
+                    <button class="btn btn-success detail-btn" data-materia-id="{{ materia.id }}">Detalle</button>
+
                 </li>
             {% endfor %}
             <input type="submit" id="submit" value="Enviar">
 
         </ul>
+        <div class="modal fade" id="detailModal" tabindex="-1" aria-labelledby="detailModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel"> Detalle Materia</h5>
+                        <button type="button " id="close" class="btn-close" data-bs-dismiss="modal"
+                                aria-label="Close"></button>
+
+                    </div>
+                    <div class="modal-body">
+                        <form id="detailForm">
+                            <!-- Los campos del form los vamos a llenar de forma dinamica con JS -->
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+
+                        <button type="button" id="cerrar" class="btn btn-secondary" data-bs-dismmis="modal"> Cerrar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
     {% else %}
         <p></p>
     {% endif %}
+
     </body>
     </html>
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
+            var detailButton = document.querySelectorAll('.detail-btn');
+            detailButton.forEach(function (button) {
+                button.addEventListener('click', function () {
+                    var materiaId = this.getAttribute('data-materia-id');
+                    var url = `{% url 'avance_academico:detail-materia' 0 %}`.replace('0', materiaId);
 
+                    fetch(url)
+                        .then(response => response.text())
+                        .then(html => {
+                            document.getElementById('detailForm').innerHTML = html;
+                            var modal = new bootstrap.Modal(document.getElementById('detailModal'));
+                            modal.show();
+                            document.getElementById('close').addEventListener('click', function () {
+                                modal.hide();
+                            })
+                            document.getElementById('cerrar').addEventListener('click', function () {
+                                modal.hide();
+                            })
+                        })
+                        .catch(error => console.error('Error:', error));
+
+                });
+            });
             var input = document.getElementById("buscador");
             input.addEventListener("keyup", function () {
                 var filtro = input.value.toLowerCase();
                 var items = document.querySelectorAll('.materia');
-                var encuentra=false;
+                var encuentra = false;
                 items.forEach(function (item) {
                     if (item.dataset.nombre.toLowerCase().includes(filtro)) {
                         item.style.display = "";
-                        encuentra=true;
+                        encuentra = true;
 
                     } else {
                         item.style.display = "none";
@@ -44,6 +98,7 @@
                 });
                 document.getElementById('submit').addEventListener('click', function (e) {
                     if (encuentra) {
+
                         Swal.fire({
                             title: "Genial",
                             text: "Se encontró una materia",
@@ -59,11 +114,9 @@
                             text: "No se encontró ninguna materia",
                         });
                     }
-
                 })
-            });
-
-        });
+            })
+        })
 
 
     </script>

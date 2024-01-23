@@ -6,80 +6,95 @@
         <meta charset="UTF-8">
         <title>Title</title>
         <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+         <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+        <!-- Incluye Bootstrap CSS y JS -->
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+        <!-- Incluye SweetAlert2 -->
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+
+
+
 
     </head>
     <style>
-    #grafo {
-        width: 100%; /* O un valor fijo como 800px */
-        height: 600px; /* Ajusta la altura según sea necesario */
-        /* border: 1px solid #666; Opcional, para visualizar los límites del contenedor */
-    }
-</style>
+        #grafo {
+            width: 100%; /* O un valor fijo como 800px */
+            height: 600px; /* Ajusta la altura según sea necesario */
+            /* border: 1px solid #666; Opcional, para visualizar los límites del contenedor */
+        }
+    </style>
     <body>
     <ul>
         <li><h3>Año: {{ materia.anio }}</h3></li>
         <li><h3>Nombre: {{ profesor.nombre_profesor }}</h3></li>
-         <li><h3>Duracion: {{ materia.duracion }}</h3></li>
-         <li><h3>Profesores:</h3></li>
-         {% for profesor in profesores %}
-              <li><h5>{{ profesor.nombre_profesor }} {{ profesor.apellido_profesor }}</h5></li>
+        <li><h3>Duracion: {{ materia.duracion }}</h3></li>
+        <li><h3>Profesores:</h3></li>
+        {% for profesor in profesores %}
+            <li><h5>{{ profesor.nombre_profesor }} {{ profesor.apellido_profesor }}</h5></li>
         {% endfor %}
-        <li><h3>Historial:</h3></li>
-        {% for parcial in calificaciones %}
-            <li>{{parcial.tipo}} : {{ parcial.nota }}</li>
-        {% endfor %}
+         {% if materia_cursada %}
+            <li><h3>Historial:</h3></li>
+            {% for parcial in calificaciones %}
+                <li>{{ parcial.tipo }} : {{ parcial.nota }}</li>
+            {% endfor %}
+        {% else %}
+            <p></p>
+        {% endif %}
         <li><h3>Correlativas:</h3></li>
-      {# {% for correlativa in materia.correlativas.all %}<li><h4>{{ correlativa.nombre }},Año: {{ correlativa.anio }}, Tipo: {{ correlativa.duracion }} </h4></li>{% endfor %}#}
-            <div id="grafo"></div>
-    <script>
-        // Código JavaScript para renderizar el grafo
-        var grafo_data = '{{ grafo_json|safe }}';
+        <div id="grafo"></div>
+        <li>Hola</li>
+        <script>
+            // Código JavaScript para renderizar el grafo
+            var grafo_data = '{{ grafo_json|safe }}';
+            document.addEventListener('DOMContentLoaded', function () {
+                // Parsear los datos del grafo
+                var datos = JSON.parse(grafo_data);
 
-        document.addEventListener('DOMContentLoaded', function () {
-            // Parsear los datos del grafo
-            var datos = JSON.parse(grafo_data);
+                // Opciones adicionales para personalizar nodos y aristas
+                var opciones = {
+                    nodes: {
+                        shape: 'dot',
+                        size: 30,  // Tamaño más grande de los nodos
+                        font: {
+                            size: 20  // Tamaño de fuente más grande para etiquetas
+                        }
+                    },
+                    edges: {
+                        width: 2,  // Aristas más gruesas
+                        arrows: {
+                            to: {enabled: true, scaleFactor: 1.5}  // Flechas más grandes
+                        }
+                    },
+                    layout: {
+                        hierarchical: {
+                            direction: 'DU',
+                            sortMethod: 'directed'
+                        }
+                    },
+                    physics: {
+                        enabled: true,  // Habilita o ajusta la física para espaciar los nodos
+                    },
+                    interaction: {hover: true}
+                };
 
-            // Opciones adicionales para personalizar nodos y aristas
-    var opciones = {
-        nodes: {
-            shape: 'dot',
-            size: 30,  // Tamaño más grande de los nodos
-            font: {
-                size: 20  // Tamaño de fuente más grande para etiquetas
-            }
-        },
-        edges: {
-            width: 2,  // Aristas más gruesas
-            arrows: {
-                to: {enabled: true, scaleFactor: 1.5}  // Flechas más grandes
-            }
-        },
-        layout: {
-            hierarchical: {
-                direction: 'DU',
-                sortMethod: 'directed'
-            }
-        },
-        physics: {
-            enabled: true,  // Habilita o ajusta la física para espaciar los nodos
-        },
-        interaction: { hover: true }
-    };
+                // Crear el grafo y asignarlo al contenedor
+                var contenedor = document.getElementById('grafo');
+                var grafo = new vis.Network(contenedor, datos, opciones);
 
-            // Crear el grafo y asignarlo al contenedor
-            var contenedor = document.getElementById('grafo');
-            var grafo = new vis.Network(contenedor, datos, opciones);
-
-            // Agregar eventos a los nodos si es necesario
-            grafo.on("click", function (params) {
-                if (params.nodes.length > 0) {
-                    var nodeId = params.nodes[0];
-                    console.log('Nodo clickeado:', nodeId);
-                    // Aquí puedes añadir más lógica, como mostrar detalles del nodo
-                }
+                // Agregar eventos a los nodos si es necesario
+                grafo.on("click", function (params) {
+                    if (params.nodes.length > 0) {
+                        var nodeId = params.nodes[0];
+                        console.log('Nodo clickeado:', nodeId);
+                        // Aquí puedes añadir más lógica, como mostrar detalles del nodo
+                    }
+                });
             });
-        });
-    </script>
+        </script>
     </ul>
     </body>
     </html>

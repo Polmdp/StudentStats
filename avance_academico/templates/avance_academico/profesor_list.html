@@ -1,5 +1,6 @@
 {% extends "avance_academico/base.html" %}
 {% block content %}
+
     <!DOCTYPE html>
     <html lang="en">
     <head>
@@ -8,19 +9,103 @@
     </head>
     <body>
     {% if profesor_list %}
-    <ul>
-        {% for profesor in profesor_list %}
-            <li>
-            <a href="{% url 'avance_academico:edita-profesor-form' profesor.id %}" class="btn btn-success"> Editar </a>
-            <a href="{% url 'avance_academico:detail-profesor' profesor.id%}"
-                       class="btn btn-info"> {{ profesor.nombre_profesor }}  {{profesor.apellido_profesor }} </a>
-            </li>
-        {% endfor %}
-        <a href = "{% url 'avance_academico:agrega-profesor' %}"class="btn btn-warning"> Agregar Profesor</a>
+        <ul>
+            {% for profesor in profesor_list %}
+                <li>
+                    <button class="btn btn-success edit-btn" data-profesor-id="{{ profesor.id }}">Editar</button>
+                    <a href="{% url 'avance_academico:detail-profesor' profesor.id %}" class="btn btn-info">
+                        {{ profesor.nombre_profesor }} {{ profesor.apellido_profesor }}
+                    </a>
+                </li>
+            {% endfor %}
+            <a href="{% url 'avance_academico:agrega-profesor' %}" class="btn btn-warning">Agregar Profesor</a>
+        </ul>
+
+        {#        Modal Para Edicion de Profesores #}
+        <div class="modal fade" id="editModal" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editModalLabel"> Editar Profesor FORM</h5>
+                        <button type="button " id="close" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+
+                    </div>
+                    <div class="modal-body">
+                        <form id="editForm">
+                            <!-- Los campos del form los vamos a llenar de forma dinamica con JS -->
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" id="cerrar" class="btn btn-secondary" data-bs-dismmis="modal"> Cerrar</button>
+                        <button type="button" id="saveChangesBtn" class="btn btn-primary">Guardar Cambios</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
     {% else %}
-        <p></p>
+        <p>No hay profesores disponibles.</p>
     {% endif %}
-    </ul>
     </body>
     </html>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var editButtons = document.querySelectorAll('.edit-btn');
+            editButtons.forEach(function (button) {
+                button.addEventListener('click', function () {
+                    var profesorId = this.getAttribute('data-profesor-id');
+                    var url = `{% url 'avance_academico:edita-profesor-form' 0 %}`.replace('0', profesorId);
+
+                    fetch(url)
+                        .then(response => response.text())
+                        .then(html => {
+                            document.getElementById('editForm').innerHTML = html;
+                            var modal = new bootstrap.Modal(document.getElementById('editModal'));
+                            modal.show();
+
+                            document.getElementById('saveChangesBtn').addEventListener('click', function () {
+                                var form = document.getElementById('editForm');
+                                var formData = new FormData(form);
+                                var actionUrl = url;
+
+                                fetch(actionUrl, {
+                                    method: 'POST',
+                                    body: formData,
+                                    headers: {
+                                        'X-Requested-With': 'XMLHttpRequest'
+                                    }
+                                })
+                                    .then(response => {
+                                        if (response.ok) {
+                                            return response.json();
+                                        } else {
+                                            throw new Error('Aca va el error');
+                                        }
+                                    })
+                                    .then(data => {
+                                        //cerrar el modal, hacer refresh, mostrar un cartelito de algo
+                                        var modal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
+                                        modal.hide();
+                                        //aca puede ir el refresh del template de lista de profesor.
+                                    })
+                                    .catch(error => console.error('Error:', error));
+                                modal.hide();
+                            });
+                            document.getElementById('close').addEventListener('click',function (){
+                                modal.hide();
+                            })
+                            document.getElementById('cerrar').addEventListener('click',function (){
+                                modal.hide();
+                            })
+                        })
+                        .catch(error => console.error('Error:', error));
+
+                });
+            });
+        });
+    </script>
+
+
 {% endblock %}

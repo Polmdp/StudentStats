@@ -1,0 +1,90 @@
+{% extends "avance_academico/base.html" %}
+{% block content %}
+    <!doctype html>
+    <html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+    </head>
+    <body>
+    <div id="materia_list" {{ materia_list }}></div>
+
+    {% if materia_list %}
+
+        <input type="text" name="buscador" id="buscador" placeholder="Buscar...">
+        <input type="submit" id="submit" value="Enviar">
+        <li><a href="{% url 'avance_academico:lista-materias' %}" class="btn btn-outline-secondary"> Tus materias</a>
+        </li>
+
+    {% else %}
+        <p></p>
+    {% endif %}
+    </body>
+    </html>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+
+
+            var inputbusqueda = document.getElementById("buscador");
+            var url = '{% url 'avance_academico:buscar_materia' %}';
+
+            inputbusqueda.addEventListener("keyup", function () {
+                var query = inputbusqueda.value;
+                fetch(`${url}?q=${query}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        var lista = materia_list;
+                        lista.textContent = ""; //Limpia el contenido de la lista
+                        if (lista) {
+
+                            // El elemento existe, ahora puedes usar lista.innerHTML sin preocupaciones
+                            console.log(lista);
+                        } else {
+                            console.error('El elemento con ID "lista-materias" no fue encontrado en el DOM');
+                        }
+                        var encuentra=false;
+
+                        if (data.length > 0) {
+                            data.forEach(materia => {
+                                encuentra=true;
+                                var li = document.createElement('li');
+                                li.classList.add('materia-item');
+                                var detalle_url = `{% url 'avance_academico:detail-materia' 0 %}`.replace('0', materia.id);
+                                li.innerHTML = `<a href="${detalle_url}" class="materia">${materia.nombre}</a>`;
+                                lista.appendChild(li);
+                            });
+                        } else {
+                            lista.innerHTML = '<p>No hay materias que coincidan</p>';
+                        }
+
+                            document.getElementById('submit').addEventListener('click', function (e) {
+                                if (encuentra) {
+
+                                    Swal.fire({
+                                        title: "Genial",
+                                        text: "Se encontró una materia",
+                                        imageUrl: 'https://www.lacomuderacing.com/wp-content/uploads/2019/09/El-Cilindro-de-Avellaneda.jpg',
+                                        imageWidth: 400,
+                                        imageHeight: 200,
+                                        imageAlt: "Custom image"
+                                    });
+                                } else {
+                                    Swal.fire({
+                                        icon: "error",
+                                        title: "Oops...",
+                                        text: "No se encontró ninguna materia",
+                                    });
+                                }
+
+                            })
+                        });
+
+
+                    })
+
+
+        })
+
+
+    </script>
+{% endblock %}
