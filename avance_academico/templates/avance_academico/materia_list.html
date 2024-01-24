@@ -7,6 +7,11 @@
         <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
 
         <title>Filtro de elementos</title>
+           <style>
+            body.modal-open nav {
+                visibility: hidden;
+            }
+        </style>
     </head>
 
     <body>
@@ -58,12 +63,22 @@
     </html>
 
     <script>
+    function abrirModal() {
+            document.body.classList.add('modal-open');
+            // Tu lógica para abrir el modal
+        }
+
+        function cerrarModal() {
+            document.body.classList.remove('modal-open');
+            // Tu lógica para cerrar el modal
+        }
         document.addEventListener('DOMContentLoaded', function () {
             var detailButton = document.querySelectorAll('.detail-btn');
             detailButton.forEach(function (button) {
                 button.addEventListener('click', function () {
                     var materiaId = this.getAttribute('data-materia-id');
                     var url = `{% url 'avance_academico:detail-materia' 0 %}`.replace('0', materiaId);
+                    document.body.classList.add('modal-open');
 
                     fetch(url)
                         .then(response => response.text())
@@ -78,6 +93,14 @@
                                 modal.hide();
                             })
                         })
+                         .then(data => {
+                                        //cerrar el modal, hacer refresh, mostrar un cartelito de algo
+                                        var modal = bootstrap.Modal.getInstance(document.getElementById('detailModal'));
+                                        modal.hide();
+                                        document.body.classList.remove('modal-open');
+
+                                        //aca puede ir el refresh del template de lista de profesor.
+                                    })
                         .catch(error => console.error('Error:', error));
 
                 });

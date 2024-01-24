@@ -17,20 +17,15 @@ class Materia(models.Model):
     duracion = models.CharField(max_length=50, choices=Tipo_cursada, null=True, blank=True)
     # Relaciones
     correlativas = models.ManyToManyField('self', symmetrical=False, blank=True)
-    carrera_materia=models.ManyToManyField('Carrera',symmetrical=False,blank=True,default="carrera")
+    carrera_materia = models.ManyToManyField('Carrera', symmetrical=False, blank=True, default="carrera")
     Dias_cursada = (
-    ("LUNES", "LUNES"), ("MARTES", "MARTES"), ("MIERCOLES", "MIERCOLES"), ("JUEVES", "JUEVES"), ("VIERNES", "VIERNES"),
-    ("SABADO", "SABADO"))
-    Tipo_horario=(
-        ('15:00', '15:00'),
-        ('16:00', '16:00'),
-        ('17:00', '17:00'),
-        ('18:00', '18:00'),
-        ('19:00','19:00'),
-        ('20:00','20:00')
-    )
-    dia=models.CharField(max_length=50, choices=Dias_cursada, null=True, blank=True)
-    horario=models.CharField(max_length=50, choices=Tipo_horario, null=True, blank=True)
+        ("LUNES", "LUNES"), ("MARTES", "MARTES"), ("MIERCOLES", "MIERCOLES"), ("JUEVES", "JUEVES"),
+        ("VIERNES", "VIERNES"),
+        ("SABADO", "SABADO"))
+
+    dia = models.CharField(max_length=50, choices=Dias_cursada, null=True, blank=True)
+    inicio_horario = models.TimeField(blank=True, null=True)
+    fin_horario = models.TimeField(blank=True, null=True)
 
     # Relaciones
 
@@ -39,9 +34,14 @@ class Materia(models.Model):
 
 
 class Carrera(models.Model):
-    nombre=models.CharField(max_length=200, default="nombre")
+    nombre = models.CharField(max_length=200, default="nombre")
+    materias=models.IntegerField(default=0)
+    titulo_intermedio=models.BooleanField()
+    años=models.IntegerField(default=0)
     def __str__(self):
         return f"{self.nombre}"
+
+
 class Estudiante(models.Model):
     # Campos básicos
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -49,7 +49,8 @@ class Estudiante(models.Model):
     nombre = models.CharField(max_length=200, default="0")
     apellido = models.CharField(max_length=200, default="0")
     alta_admin = models.BooleanField()
-    carreras=models.ManyToManyField('Carrera', symmetrical=False, blank=True)
+    carreras = models.ManyToManyField('Carrera', symmetrical=False, blank=True)
+
     def __str__(self):
         return f"{self.nombre} {self.apellido} ({self.dni})"
 
@@ -74,6 +75,7 @@ class MateriaCursada(models.Model):
     def __str__(self):
         return f"{self.estudiante}{self.materia}"
 
+
 class Calificacion(models.Model):
     materia_cursada = models.ForeignKey(MateriaCursada, on_delete=models.CASCADE)
     Tipo_examen = (
@@ -85,3 +87,18 @@ class Calificacion(models.Model):
     nota = models.DecimalField(max_digits=3, decimal_places=2)
     fecha = models.DateField()
 
+
+class ConfiguracionSemestre(models.Model):
+    inicio_primer_cuatrimestre = models.DateField()
+    fin_primer_cuatrimestre = models.DateField()
+    inicio_segundo_cuatrimestre = models.DateField()
+    fin_segundo_cuatrimestre = models.DateField()
+    @staticmethod
+    def obtener_fechas_actuales():
+        configuracion = ConfiguracionSemestre.objects.first()
+        return {
+        "inicio_primer_cuatri": configuracion.inicio_primer_cuatrimestre,
+        "fin_primer_cuatri": configuracion.fin_primer_cuatrimestre,
+        "inicio_segundo_cuatri": configuracion.inicio_segundo_cuatrimestre,
+        "fin_segundo_cuatri": configuracion.fin_segundo_cuatrimestre
+        }

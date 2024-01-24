@@ -1,5 +1,5 @@
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from tkinter import INSERT
 from urllib import request
 
@@ -17,7 +17,7 @@ from .forms import ProfesorModel, MateriaModel
 # Create your views here.
 
 from django.views import generic
-from .models import Materia, Profesor, Estudiante, MateriaCursada, Calificacion
+from .models import Materia, Profesor, Estudiante, MateriaCursada, Calificacion,ConfiguracionSemestre
 import networkx as nx
 
 
@@ -59,34 +59,26 @@ def Estadocarrera(request):
 def VerificaIncripcion(request, id):
     estudiante = Estudiante.objects.get(user=request.user)
     materia = get_object_or_404(Materia, pk=id)
-    correlativas = materia.correlativas.all()
-    correlativas_no_aprobadas = correlativas.exclude(
-        id__in=MateriaCursada.objects.filter(estudiante=estudiante, aprobada=True).values_list('materia_id', flat=True))
-
-    materias_encurso=MateriaCursada.objects.filter(estudiante=estudiante, en_curso=1)
+    materias_encurso = MateriaCursada.objects.filter(estudiante=estudiante, en_curso=1)
     materias_encurso_ids = [materia.materia_id for materia in materias_encurso]
     materias = Materia.objects.filter(id__in=materias_encurso_ids).all()
-    materias_iguales = materias.filter(horario__contains=materia.horario, dia__contains=materia.dia)
+    materias_iguales = materias.filter(dia__contains=materia.dia)
+    materias_superpuestas=[]
+    for materia_tabla in materias_iguales:
+        print(materias_iguales)
+        if (materia.inicio_horario < materia_tabla.fin_horario and materia.inicio_horario >= materia_tabla.inicio_horario) or \
+                ( materia_tabla.inicio_horario < materia.fin_horario and materia_tabla.inicio_horario >= materia.inicio_horario):
+            materias_superpuestas.append(materia_tabla)
 
-    if materias_iguales.exists():
+    if len(materias_superpuestas)>0:
         mensaje = f"Error en la inscripción, coincide con la(s) materia(s): {', '.join(str(materia.nombre) for materia in materias_iguales)}"
         return JsonResponse({
             "success": False,
             "message": mensaje,
         })
     else:
-        if not correlativas_no_aprobadas:
-            MateriaCursada.objects.create(estudiante=estudiante, materia=materia, en_curso=1)
-
-            return JsonResponse({"success": True})
-
-        else:
-            lista_materias_nombre = [correlativa.nombre for correlativa in correlativas_no_aprobadas]
-            return JsonResponse({
-                "success": False,
-                "message": "Error en la inscripción",
-                "details": {"correlativas_no_aprobadas": lista_materias_nombre}
-            })
+        MateriaCursada.objects.create(estudiante=estudiante, materia=materia, en_curso=1)
+        return JsonResponse({"success": True})
 
 
 class AnotaMaterias(LoginRequiredMixin, generic.ListView):
@@ -97,21 +89,26 @@ class AnotaMaterias(LoginRequiredMixin, generic.ListView):
         estudiante = Estudiante.objects.get(user=self.request.user)
         materias_no_disponibles = MateriaCursada.objects.filter(estudiante=estudiante)
         materias_no_disponibles_ids = [materia_cursada.materia_id for materia_cursada in materias_no_disponibles]
-        fecha_actual = datetime.now()
-        fecha_limite_primercuatri = datetime(2024, 4, 1)
-        fecha_inicio_segundocuatri = datetime(2024, 7, 1)
-        fecha_limite_segundocuatri = datetime(2024, 7, 25)
-        if fecha_actual <= fecha_limite_primercuatri:
+        fechas_semestre = ConfiguracionSemestre.obtener_fechas_actuales()
+        fecha_actual = datetime.now().date()
+
+        if fecha_actual <= fechas_semestre["fin_primer_cuatri"]:
             materias = Materia.objects.exclude(id__in=materias_no_disponibles_ids).exclude(
                 duracion="SEGUNDO CUATRIMESTRE")
 
-        elif fecha_actual < fecha_inicio_segundocuatri or fecha_actual > fecha_limite_segundocuatri:
+        elif fecha_actual < fechas_semestre["inicio_segundo_cuatri"] or fecha_actual >fechas_semestre["fin_segundo_cuatri"]:
             materias = []
         else:
             materias = Materia.objects.exclude(id__in=materias_no_disponibles_ids).filter(
                 duracion="SEGUNDO CUATRIMESTRE")
-
-        return materias
+        materias_disponibles=[]
+        for materia in materias:
+            correlativas=materia.correlativas.all()
+            correlativas_no_aprobadas = correlativas.exclude(id__in=MateriaCursada.objects.filter(estudiante=estudiante, aprobada=True).values_list('materia_id',
+                                                                                                           flat=True))
+            if not correlativas_no_aprobadas:
+                materias_disponibles.append(materia)
+        return materias_disponibles
 
 
 class MyLoginView(LoginView):

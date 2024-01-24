@@ -11,9 +11,6 @@
     {% for materia in materias_disponibles %}
         <li>
             <a href="{% url 'avance_academico:detail-materia' materia.id %}"> {{ materia.nombre }} </a>
-
-
-
             <button onclick="anotarseEnMateria({{ materia.id }})" class="btn btn-success">Anotarse
             </button>
 
@@ -83,9 +80,10 @@
                 .catch(error => console.error('Error:', error));
                 }
             });
-
-
         }
-
+        setInterval(recargarPagina, 4000);
+        function recargarPagina() {
+        location.reload();
+        }
     </script>
 {% endblock %}
