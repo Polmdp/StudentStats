@@ -17,8 +17,18 @@ from .forms import ProfesorModel, MateriaModel
 # Create your views here.
 
 from django.views import generic
-from .models import Materia, Profesor, Estudiante, MateriaCursada, Calificacion,ConfiguracionSemestre
+from .models import Materia, Profesor, Estudiante, MateriaCursada, Calificacion, ConfiguracionSemestre
 import networkx as nx
+
+
+def cronogramaMaterias(request):
+    template_name = "avance_academico/cronograma-materias.html"
+    estudiante = Estudiante.objects.get(user=request.user)
+    materias_encurso = MateriaCursada.objects.filter(estudiante=estudiante, en_curso=1)
+    materias_encurso_ids = [materia.materia_id for materia in materias_encurso]
+    materias = Materia.objects.filter(id__in=materias_encurso_ids).order_by("inicio_horario").all()
+    dias=['LUNES', 'MARTES', 'MIERCOLES', 'JUEVES', 'VIERNES', 'SABADO']
+    return render(request,template_name,{"materias":materias,"dias":dias})
 
 
 def ValidaDatos(request):
@@ -63,14 +73,16 @@ def VerificaIncripcion(request, id):
     materias_encurso_ids = [materia.materia_id for materia in materias_encurso]
     materias = Materia.objects.filter(id__in=materias_encurso_ids).all()
     materias_iguales = materias.filter(dia__contains=materia.dia)
-    materias_superpuestas=[]
+    materias_superpuestas = []
     for materia_tabla in materias_iguales:
         print(materias_iguales)
-        if (materia.inicio_horario < materia_tabla.fin_horario and materia.inicio_horario >= materia_tabla.inicio_horario) or \
-                ( materia_tabla.inicio_horario < materia.fin_horario and materia_tabla.inicio_horario >= materia.inicio_horario):
+        if (
+                materia.inicio_horario < materia_tabla.fin_horario and materia.inicio_horario >= materia_tabla.inicio_horario) or \
+                (
+                        materia_tabla.inicio_horario < materia.fin_horario and materia_tabla.inicio_horario >= materia.inicio_horario):
             materias_superpuestas.append(materia_tabla)
 
-    if len(materias_superpuestas)>0:
+    if len(materias_superpuestas) > 0:
         mensaje = f"Error en la inscripción, coincide con la(s) materia(s): {', '.join(str(materia.nombre) for materia in materias_iguales)}"
         return JsonResponse({
             "success": False,
@@ -96,16 +108,18 @@ class AnotaMaterias(LoginRequiredMixin, generic.ListView):
             materias = Materia.objects.exclude(id__in=materias_no_disponibles_ids).exclude(
                 duracion="SEGUNDO CUATRIMESTRE")
 
-        elif fecha_actual < fechas_semestre["inicio_segundo_cuatri"] or fecha_actual >fechas_semestre["fin_segundo_cuatri"]:
+        elif fecha_actual < fechas_semestre["inicio_segundo_cuatri"] or fecha_actual > fechas_semestre[
+            "fin_segundo_cuatri"]:
             materias = []
         else:
             materias = Materia.objects.exclude(id__in=materias_no_disponibles_ids).filter(
                 duracion="SEGUNDO CUATRIMESTRE")
-        materias_disponibles=[]
+        materias_disponibles = []
         for materia in materias:
-            correlativas=materia.correlativas.all()
-            correlativas_no_aprobadas = correlativas.exclude(id__in=MateriaCursada.objects.filter(estudiante=estudiante, aprobada=True).values_list('materia_id',
-                                                                                                           flat=True))
+            correlativas = materia.correlativas.all()
+            correlativas_no_aprobadas = correlativas.exclude(
+                id__in=MateriaCursada.objects.filter(estudiante=estudiante, aprobada=True).values_list('materia_id',
+                                                                                                       flat=True))
             if not correlativas_no_aprobadas:
                 materias_disponibles.append(materia)
         return materias_disponibles

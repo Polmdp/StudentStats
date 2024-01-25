@@ -27,6 +27,7 @@ class Materia(models.Model):
     inicio_horario = models.TimeField(blank=True, null=True)
     fin_horario = models.TimeField(blank=True, null=True)
 
+
     # Relaciones
 
     def __str__(self):

@@ -14,6 +14,7 @@
         <input type="text" name="buscador" id="buscador" placeholder="Buscar...">
         <input type="submit" id="submit" value="Enviar">
         <li><a href="{% url 'avance_academico:lista-materias' %}" class="btn btn-outline-secondary"> Tus materias</a>
+        <li><a href="{% url 'avance_academico:cronograma-materias' %}" class="btn btn-outline-secondary"> Cronograma</a>
         </li>
 
     {% else %}

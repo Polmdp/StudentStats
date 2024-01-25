@@ -19,6 +19,8 @@ urlpatterns = [
     path("validadatos/",views.ValidaDatos,name="ingresa-datos"),
     path('buscar_materia', views.buscar_materia, name='buscar_materia'),
     path("materias_carrera",views.MuestraMaterias.as_view(),name="muestra_materias"),
-    path("error/",views.errorAnotacion,name="error_anotacion")
+    path("error/",views.errorAnotacion,name="error_anotacion"),
+    path("cronograma/",views.cronogramaMaterias,name="cronograma-materias"),
+
 
 ]
