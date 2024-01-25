@@ -5,6 +5,7 @@
     <title>Title</title>
     <style>body {
         margin-top: 20px;
+            font-family: 'Roboto', sans-serif;
     }
 
     .bg-light-gray {
@@ -127,49 +128,78 @@
     }</style>
 </head>
 <body>
-{% if materias %}
-    <div class="container">
-        <div class="timetable-img text-center">
-            <img src="img/content/timetable.png" alt="">
-        </div>
-        <div class="table-responsive">
-            <table class="table table-bordered text-center">
-                <thead>
-                <tr class="bg-light-gray">
-                    <th class="text-uppercase">HORARIO
-                    </th>
-                    {% for dia in dias %}
-                        <th class="text-uppercase">{{ dia }}</th>
-                    {% endfor %}
 
-                </tr>
-                </thead>
-                <tbody>
-              {% for materia in materias %}
+<div id="tabla-horarios"></div>
 
-                    {% ifchanged materia.inicio_horario %}
-                        <tr>
-                            <td class="align-middle">{{ materia.inicio_horario }}</td>
-                            {% for dia in dias %}
-                                <td>{% if materia.dia == dia %}{{ materia.nombre }}{% endif %}</td>
-                            {% endfor %}
 
-                        </tr>
-                    {% else %}
-                        {% for dia in dias %}
-                            <td >{% if materia.dia == dia %}{{ materia.nombre }}{% endif %}</td>
-                        {% endfor %}
-                    {% endifchanged %}
-                {% endfor %}
+<script>
+    const horas = [];
+    for (let i = 13; i <= 22; i++) {
+        horas.push(i < 10 ? `0${i}:00` : `${i}:00`);
+    }
 
-                </tbody>
+    const diasCursada = ['LUNES', 'MARTES', 'MIERCOLES', 'JUEVES', 'VIERNES', 'SABADO'];
 
-            </table>
-        </div>
-    </div>
-{% else %}
-    <p></p>
-{% endif %}
-</body>
+    function construirTabla(materiasData) {
+        let tabla = '<table class="table table-bordered text-center">';
+        tabla += '<thead> 1 ' +
+            '   <tr class="bg-light-gray">  ' +
+            ' <th class="text-uppercase">Time</th> ' +
+            '<th class="text-uppercase">LUNES</th>' +
+            ' <th class="text-uppercase">MARTES</th>' +
+            ' <th class="text-uppercase">MIERCOLES</th>' +
+            ' <th class="text-uppercase">JUEVES</th>' +
+            ' <th class="text-uppercase">VIERNES</th>' +
+            ' <th class="text-uppercase">SABADUQUI</th>' +
+            ' </tr> ' +
+            ' </thead>';  // Construye tu thead aquí
+        tabla += '<tbody>';
+
+        horas.forEach(hora => {
+            tabla += '<tr>';
+            tabla += `<td class="align-middle">${hora}</td>`;
+
+            diasCursada.forEach(dia => {
+                const materiaEncontrada = materiasData.find(materia =>
+                    materia.dia === dia && materia.inicio_horario.startsWith(hora));
+
+                if (materiaEncontrada) {
+
+                    tabla += `<td rowspan="${Math.ceil(materiaEncontrada.duracionHoras)}"><span class="bg-sky padding-5px-tb padding-15px-lr border-radius-5 margin-10px-bottom text-white font-size16 xs-font-size13">${materiaEncontrada.nombre}</span>`;
+                    tabla += `<div class="margin-10px-top font-size14">${materiaEncontrada.inicio_horario.slice(0, 5)} - ${materiaEncontrada.fin_horario.slice(0, 5)}</div>`;
+
+                    if (materiaEncontrada.profesores.length > 0) {
+
+                        tabla += '<div class="font-size13 text-light-gray">';
+                        materiaEncontrada.profesores.forEach(profesor => {
+                            tabla += `${profesor.nombre_profesor} ${profesor.apellido_profesor} `;
+                        });
+                        tabla += '</div>';
+                    } else {
+                        tabla += '<div class="font-size13 text-light-gray">Sin profesor asignado</div>';
+                    }
+
+                    tabla += '</td>';
+                } else {
+                    tabla += '<td></td>'; // Celda vacía si no hay materia
+                }
+            });
+
+            tabla += '</tr>';
+        });
+
+
+        tabla += '</tbody></table>';
+        document.getElementById('tabla-horarios').innerHTML = tabla;
+    }
+
+    fetch('/api/materias/')  // Asegúrate de que esta URL sea correcta
+        .then(response => response.json())
+        .then(data => {
+            console.log(data);
+            construirTabla(data);
+        })
+        .catch(error => console.error('Error al obtener las materias:', error));
+</script>
 
 </html>

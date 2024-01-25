@@ -1,34 +1,63 @@
 import json
-from datetime import datetime, timezone
-from tkinter import INSERT
+from datetime import datetime, time, timedelta, date
 from urllib import request
 
+import networkx as nx
+from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
+from django.core.serializers import serialize
 from django.http import JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
+from django.views import generic
 from django.views.decorators.http import require_GET
 from pyexpat.errors import messages
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
 
-from django import forms
 from .forms import ProfesorModel, MateriaModel
-
-# Create your views here.
-
-from django.views import generic
 from .models import Materia, Profesor, Estudiante, MateriaCursada, Calificacion, ConfiguracionSemestre
-import networkx as nx
 
 
-def cronogramaMaterias(request):
-    template_name = "avance_academico/cronograma-materias.html"
+from rest_framework import serializers
+from .models import Materia, Profesor
+
+class ProfesorSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Profesor
+        fields = ('nombre_profesor', 'apellido_profesor')
+
+class MateriaSerializer(serializers.ModelSerializer):
+    profesores = ProfesorSerializer(many=True, read_only=True)
+    duracionHoras = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Materia
+        fields = ('codigo', 'nombre', 'dia', 'inicio_horario', 'fin_horario', 'profesores', 'duracionHoras')
+
+    def get_duracionHoras(self, obj):
+        if obj.inicio_horario and obj.fin_horario:
+            inicio = datetime.combine(datetime.today(), obj.inicio_horario)
+            fin = datetime.combine(datetime.today(), obj.fin_horario)
+            duracion = fin - inicio
+            return duracion.total_seconds() / 3600
+        return 0
+
+@api_view(['GET'])
+def get_materias(request):
     estudiante = Estudiante.objects.get(user=request.user)
     materias_encurso = MateriaCursada.objects.filter(estudiante=estudiante, en_curso=1)
     materias_encurso_ids = [materia.materia_id for materia in materias_encurso]
     materias = Materia.objects.filter(id__in=materias_encurso_ids).order_by("inicio_horario").all()
-    dias=['LUNES', 'MARTES', 'MIERCOLES', 'JUEVES', 'VIERNES', 'SABADO']
-    return render(request,template_name,{"materias":materias,"dias":dias})
+    serializer = MateriaSerializer(materias, many=True)
+    return Response(serializer.data)
+
+def cronogramaMaterias(request):
+    template_name = "avance_academico/cronograma-materias.html"
+
+    return render(request, template_name)
+
 
 
 def ValidaDatos(request):

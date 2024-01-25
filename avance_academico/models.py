@@ -10,6 +10,14 @@ class Materia(models.Model):
         ('PRIMER CUATRIMESTRE', 'PRIMER CUATRIMESTRE'),
         ('SEGUNDO CUATRIMESTRE', 'SEGUNDO CUATRIMESTRE')
     )
+
+    Dias_cursada = (
+        ("LUNES", "LUNES"), ("MARTES", "MARTES"), ("MIERCOLES", "MIERCOLES"), ("JUEVES", "JUEVES"),
+        ("VIERNES", "VIERNES"),
+        ("SABADO", "SABADO"))
+
+
+
     # Campos básicos
     codigo = models.CharField(max_length=20)
     nombre = models.CharField(max_length=100)
@@ -18,10 +26,6 @@ class Materia(models.Model):
     # Relaciones
     correlativas = models.ManyToManyField('self', symmetrical=False, blank=True)
     carrera_materia = models.ManyToManyField('Carrera', symmetrical=False, blank=True, default="carrera")
-    Dias_cursada = (
-        ("LUNES", "LUNES"), ("MARTES", "MARTES"), ("MIERCOLES", "MIERCOLES"), ("JUEVES", "JUEVES"),
-        ("VIERNES", "VIERNES"),
-        ("SABADO", "SABADO"))
 
     dia = models.CharField(max_length=50, choices=Dias_cursada, null=True, blank=True)
     inicio_horario = models.TimeField(blank=True, null=True)
@@ -60,8 +64,7 @@ class Profesor(models.Model):
     # campos basicos
     nombre_profesor = models.CharField(max_length=200, default="Nombre")
     apellido_profesor = models.CharField(max_length=200, default="Apellido")
-    materias = models.ManyToManyField('Materia', symmetrical=False, blank=True)
-
+    materias = models.ManyToManyField('Materia', related_name='profesores', symmetrical=False, blank=True)
     def __str__(self):
         return f"{self.nombre_profesor}{self.apellido_profesor}"
 
