@@ -272,19 +272,27 @@ input[type=text]:placeholder {
     <div id="formContent">
         <!-- Icono -->
 
-
         <!-- Formulario de Login -->
         <form method="post" action="{% url 'login' %}">
             {% csrf_token %}
             <!-- Cambiar 'username' y 'password' según los nombres de tus campos en el formulario -->
+            <h2 class="fadeIn first">Inicio de Sesión</h2>
             <input type="text" id="login" class="fadeIn second" name="username" placeholder="Username">
             <input type="password" id="password" class="fadeIn third" name="password" placeholder="Password">
             <input type="submit" class="fadeIn fourth" value="Log In">
         </form>
 
+        <!-- Mensaje de bienvenida (visible solo después del inicio de sesión) -->
+        {% if user.is_authenticated %}
+            <div class="fadeIn">
+                <h2>Bienvenido, {{ user.username }}!</h2>
+                <!-- Puedes personalizar este mensaje según tus necesidades -->
+            </div>
+        {% endif %}
+
         <!-- Enlace para recuperar contraseña -->
         <div id="formFooter">
-            <a class="underlineHover" href="">Forgot Password?</a>
+            <a class="underlineHover" href="">¿Olvidaste tu contraseña?</a>
         </div>
     </div>
 </div>

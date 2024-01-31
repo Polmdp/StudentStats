@@ -29,15 +29,15 @@
     </style>
     <body>
     <ul>
-        <li><h3>Año: {{ materia.anio }}</h3></li>
-        <li><h3>Nombre: {{ profesor.nombre_profesor }}</h3></li>
-        <li><h3>Duracion: {{ materia.duracion }}</h3></li>
-        <li><h3>Profesores:</h3></li>
+        <h4>Año: {{ materia.anio }}</h4>
+        <h4>Nombre: {{ materia.nombre }}</h4>
+        <h4>Duracion: {{ materia.duracion }}</h4>
+        <h4>Profesores:</h4>
         {% for profesor in profesores %}
-            <li><h5>{{ profesor.nombre_profesor }} {{ profesor.apellido_profesor }}</h5></li>
+            <h5>{{ profesor.nombre_profesor }} {{ profesor.apellido_profesor }}</h5>
         {% endfor %}
          {% if materia_cursada %}
-            <li><h3>Historial:</h3></li>
+            <h3>Historial:</h3>
             {% for parcial in calificaciones %}
                 <li>{{ parcial.tipo }} : {{ parcial.nota }}</li>
             {% endfor %}

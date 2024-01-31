@@ -1,17 +1,20 @@
 import json
+from audioop import reverse
 from datetime import datetime, time, timedelta, date
 from urllib import request
 
 import networkx as nx
 from django import forms
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import LoginView, LogoutView
+from django.contrib.auth import logout
 from django.core.serializers import serialize
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponseRedirect
 from django.shortcuts import render, get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.views import generic
 from django.views.decorators.http import require_GET
+from django.views.generic import TemplateView
 from pyexpat.errors import messages
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -22,6 +25,8 @@ from .models import Materia, Profesor, Estudiante, MateriaCursada, Calificacion,
 
 from rest_framework import serializers
 from .models import Materia, Profesor
+
+
 
 class ProfesorSerializer(serializers.ModelSerializer):
     class Meta:
@@ -161,15 +166,22 @@ class MyLoginView(LoginView):
     def get_success_url(self):
         return reverse_lazy('avance_academico:index')
 
+
     def form_invalid(self, form):
         messages.error(self.request, 'Invalid username or password')
         return self.render_to_response(self.get_context_data(form=form))
 
-
+class CustomLogoutView(LogoutView):
+    next_page = reverse_lazy('login')
 class IndexView(generic.ListView):
     template_name = "avance_academico/index.html"
     context_object_name = ""
 
+    def get_context_data(self, **kwargs):
+        usuario = self.request.user  # o de donde sea que obtienes el usuario
+        context = super().get_context_data(usuario=usuario, **kwargs)
+        # tu lógica adicional aquí
+        return context
     def get_queryset(self):
         """Return the last five published questions."""
         return Materia.objects.order_by("-anio")[:50]
@@ -216,17 +228,22 @@ class ListaProfesores(LoginRequiredMixin, generic.ListView):
         return Profesor.objects.order_by("nombre_profesor")[:10]
 
 
-def detallemateria(request, id):
-    materia = get_object_or_404(Materia, pk=id)
-    profesores = Profesor.objects.filter(materias=materia.id)
+class DetalleMateriaView(TemplateView):
+    template_name = "avance_academico/detail_materia.html"
 
-    grafo = construir_grafo(id)
-    grafo_json = grafo_to_json(grafo)
-    return render(request, "avance_academico/detail_materia.html",
-                  {"materia": materia, "profesores": profesores,
-                   "grafo_json": grafo_json})
+    def get_context_data(self, **kwargs):
+        materia = get_object_or_404(Materia, pk=self.kwargs['id'])
+        profesores = Profesor.objects.filter(materias=materia.id)
+        grafo = construir_grafo(materia.id)
+        grafo_json = grafo_to_json(grafo)
 
-
+        # Agrega la información del usuario al contexto
+        context = super().get_context_data(**kwargs)
+        context['materia'] = materia
+        context['profesores'] = profesores
+        context['grafo_json'] = grafo_json
+        context['usuario'] = self.request.user if self.request.user.is_authenticated else None
+        return context
 def detalleprofesor(request, id):
     profesor = get_object_or_404(Profesor, pk=id)
     return render(request, "avance_academico/detail_profesor.html", {"profesor": profesor})

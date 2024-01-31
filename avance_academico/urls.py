@@ -9,7 +9,7 @@ urlpatterns = [
     path("lista_profesores/",views.ListaProfesores.as_view(),name="lista-profesores"),
 
     path("agrega_profesor/",views.agrega_profesor,name="agrega-profesor"),
-    path("detail/<int:id>/",views.detallemateria,name="detail-materia"),
+    path("detail/<int:id>/",views.DetalleMateriaView.as_view(),name="detail-materia"),
     path("detail_profesor/<int:id>/",views.detalleprofesor,name="detail-profesor"),
     path("editaprofesor-<int:id>/",views.editarprofesor,name="edita-profesor-form"),
     path("editamateria-<int:id>/",views.editarmateria,name="edita-materia"),
@@ -21,6 +21,7 @@ urlpatterns = [
     path("materias_carrera",views.MuestraMaterias.as_view(),name="muestra_materias"),
     path("error/",views.errorAnotacion,name="error_anotacion"),
     path("cronograma/",views.cronogramaMaterias,name="cronograma-materias"),
-
+    path('logout/', views.CustomLogoutView.as_view(), name='logout'),
+    path('login/',views.MyLoginView.as_view(),name="login")
 
 ]

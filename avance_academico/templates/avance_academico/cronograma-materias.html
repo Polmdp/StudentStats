@@ -1,131 +1,136 @@
+ {% include "avance_academico/base.html" %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <style>body {
-        margin-top: 20px;
+
+    <style>
+        body {
+            margin-top: 20px;
             font-family: 'Roboto', sans-serif;
-    }
+        }
 
-    .bg-light-gray {
-        background-color: #f7f7f7;
-    }
+        #tabla-horarios th, #tabla-horarios td {
+            color: #ffffff; /* Código de color blanco */
+        }
 
-    .table-bordered thead td, .table-bordered thead th {
-        border-bottom-width: 2px;
-    }
+        .table-bordered thead td, .table-bordered thead th {
+            border-bottom-width: 2px;
+        }
 
-    .table thead th {
-        vertical-align: bottom;
-        border-bottom: 2px solid #dee2e6;
-    }
+        .table thead th {
+            vertical-align: bottom;
+            border-bottom: 2px solid #dee2e6;
+        }
 
-    .table-bordered td, .table-bordered th {
-        border: 1px solid #dee2e6;
-    }
-
-
-    .bg-sky.box-shadow {
-        box-shadow: 0px 5px 0px 0px #00a2a7
-    }
-
-    .bg-orange.box-shadow {
-        box-shadow: 0px 5px 0px 0px #af4305
-    }
-
-    .bg-green.box-shadow {
-        box-shadow: 0px 5px 0px 0px #4ca520
-    }
-
-    .bg-yellow.box-shadow {
-        box-shadow: 0px 5px 0px 0px #dcbf02
-    }
-
-    .bg-pink.box-shadow {
-        box-shadow: 0px 5px 0px 0px #e82d8b
-    }
-
-    .bg-purple.box-shadow {
-        box-shadow: 0px 5px 0px 0px #8343e8
-    }
-
-    .bg-lightred.box-shadow {
-        box-shadow: 0px 5px 0px 0px #d84213
-    }
+        .table-bordered td, .table-bordered th {
+            border: 1px solid #dee2e6;
+        }
 
 
-    .bg-sky {
-        background-color: #02c2c7
-    }
+        .bg-sky.box-shadow {
+            box-shadow: 0px 5px 0px 0px #00a2a7
+        }
 
-    .bg-orange {
-        background-color: #e95601
-    }
+        .bg-orange.box-shadow {
+            box-shadow: 0px 5px 0px 0px #af4305
+        }
 
-    .bg-green {
-        background-color: #5bbd2a
-    }
+        .bg-green.box-shadow {
+            box-shadow: 0px 5px 0px 0px #4ca520
+        }
 
-    .bg-yellow {
-        background-color: #f0d001
-    }
+        .bg-yellow.box-shadow {
+            box-shadow: 0px 5px 0px 0px #dcbf02
+        }
 
-    .bg-pink {
-        background-color: #ff48a4
-    }
+        .bg-pink.box-shadow {
+            box-shadow: 0px 5px 0px 0px #e82d8b
+        }
 
-    .bg-purple {
-        background-color: #9d60ff
-    }
+        .bg-purple.box-shadow {
+            box-shadow: 0px 5px 0px 0px #8343e8
+        }
 
-    .bg-lightred {
-        background-color: #ff5722
-    }
+        .bg-lightred.box-shadow {
+            box-shadow: 0px 5px 0px 0px #d84213
+        }
 
-    .padding-15px-lr {
-        padding-left: 15px;
-        padding-right: 15px;
-    }
 
-    .padding-5px-tb {
-        padding-top: 5px;
-        padding-bottom: 5px;
-    }
+        .bg-sky {
+            background-color: #02c2c7
+        }
 
-    .margin-10px-bottom {
-        margin-bottom: 10px;
-    }
+        .bg-orange {
+            background-color: #e95601
+        }
 
-    .border-radius-5 {
-        border-radius: 5px;
-    }
+        .bg-green {
+            background-color: #5bbd2a
+        }
 
-    .margin-10px-top {
-        margin-top: 10px;
-    }
+        .bg-yellow {
+            background-color: #f0d001
+        }
 
-    .font-size14 {
-        font-size: 14px;
-    }
+        .bg-pink {
+            background-color: #ff48a4
+        }
 
-    .text-light-gray {
-        color: #d6d5d5;
-    }
+        .bg-purple {
+            background-color: #9d60ff
+        }
 
-    .font-size13 {
-        font-size: 13px;
-    }
+        .bg-lightred {
+            background-color: #ff5722
+        }
 
-    .table-bordered td, .table-bordered th {
-        border: 1px solid #dee2e6;
-    }
+        .padding-15px-lr {
+            padding-left: 15px;
+            padding-right: 15px;
+        }
 
-    .table td, .table th {
-        padding: .75rem;
-        vertical-align: top;
-        border-top: 1px solid #dee2e6;
-    }</style>
+        .padding-5px-tb {
+            padding-top: 5px;
+            padding-bottom: 5px;
+        }
+
+        .margin-10px-bottom {
+            margin-bottom: 10px;
+        }
+
+        .border-radius-5 {
+            border-radius: 5px;
+        }
+
+        .margin-10px-top {
+            margin-top: 10px;
+        }
+
+        .font-size14 {
+            font-size: 14px;
+        }
+
+        .text-light-gray {
+            color: #d6d5d5;
+        }
+
+        .font-size13 {
+            font-size: 13px;
+        }
+
+        .table-bordered td, .table-bordered th {
+            border: 1px solid #dee2e6;
+        }
+
+        .table td, .table th {
+            padding: .75rem;
+            vertical-align: top;
+            border-top: 1px solid #dee2e6;
+        }
+    </style>
 </head>
 <body>
 
@@ -142,7 +147,7 @@
 
     function construirTabla(materiasData) {
         let tabla = '<table class="table table-bordered text-center">';
-        tabla += '<thead> 1 ' +
+        tabla += '<thead>  ' +
             '   <tr class="bg-light-gray">  ' +
             ' <th class="text-uppercase">Time</th> ' +
             '<th class="text-uppercase">LUNES</th>' +
@@ -165,7 +170,10 @@
 
                 if (materiaEncontrada) {
 
+
                     tabla += `<td rowspan="${Math.ceil(materiaEncontrada.duracionHoras)}"><span class="bg-sky padding-5px-tb padding-15px-lr border-radius-5 margin-10px-bottom text-white font-size16 xs-font-size13">${materiaEncontrada.nombre}</span>`;
+
+
                     tabla += `<div class="margin-10px-top font-size14">${materiaEncontrada.inicio_horario.slice(0, 5)} - ${materiaEncontrada.fin_horario.slice(0, 5)}</div>`;
 
                     if (materiaEncontrada.profesores.length > 0) {
@@ -179,7 +187,6 @@
                         tabla += '<div class="font-size13 text-light-gray">Sin profesor asignado</div>';
                     }
 
-                    tabla += '</td>';
                 } else {
                     tabla += '<td></td>'; // Celda vacía si no hay materia
                 }
@@ -191,7 +198,11 @@
 
         tabla += '</tbody></table>';
         document.getElementById('tabla-horarios').innerHTML = tabla;
+        console.log(tabla);
+
+
     }
+
 
     fetch('/api/materias/')  // Asegúrate de que esta URL sea correcta
         .then(response => response.json())
@@ -201,5 +212,6 @@
         })
         .catch(error => console.error('Error al obtener las materias:', error));
 </script>
-
+</body>
 </html>
+

@@ -1,11 +1,22 @@
+ {% include "avance_academico/base.html" %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+
+    <style>
+        #estado_carrera h3{
+            color:  white;
+        }
+        #estado_carrera h1{
+            
+        }
+    </style>
 </head>
 <body>
-<h3>Cantidad de materias aprobadas: {{ cant_aprobadas }}</h3>
+<div id="estado_carrera">
+<h3 >Cantidad de materias aprobadas: {{ cant_aprobadas }}</h3>
 
 <h3>Cantidad de materias carrera: {{ cant_materias }}</h3>
 
@@ -25,5 +36,6 @@
     <h3>La cantidad de años calculados es {{ cant_años_calculados }}</h3>
 
 </form>
+</div>
 </body>
 </html>

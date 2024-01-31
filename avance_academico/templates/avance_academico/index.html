@@ -1,20 +1,71 @@
 {% extends "avance_academico/base.html" %}
 {% block content %}
 
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <title>Materias</title>
-    </head>
-    <body>
-    <a href = "{% url 'avance_academico:muestra_materias' %}"class="btn btn-warning">Materias Carrera</a>
-    <a href = "{% url 'avance_academico:lista-profesores' %}"class="btn btn-warning"> Listar profesores</a>
-    <a href = "{% url 'avance_academico:anota-materias' %}"class="btn btn-warning"> Anotarse a materias</a>
-    <a href = "{% url 'avance_academico:estado-carrera' %}"class="btn btn-warning"> Estado de la carrera</a>
-    <a href = "{% url 'avance_academico:ingresa-datos' %}"class="btn btn-warning"> Validar Datos</a>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Materias</title>
+    <!-- Agrega tus enlaces a hojas de estilo (si es necesario) -->
+    <style>
+        body {
+            font-family: "Arial", sans-serif;
+            margin: 0;
+            padding: 0;
+        }
 
+        .container {
+            text-align: center;
+            margin-top: 20px;
+        }
 
-    </body>
-    </html>
+        .btn {
+            display: inline-block;
+            padding: 12px 20px;
+            font-size: 16px;
+            text-align: center;
+            text-decoration: none;
+            background-color: #007bff; /* Azul académico */
+            color: white; /* Color de texto blanco */
+            border: 1px solid #007bff; /* Borde azul académico */
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            background-color: #0056b3; /* Cambia el color de fondo al pasar el mouse */
+        }
+
+        h1 {
+            color: #007bff; /* Azul académico */
+        }
+
+        p {
+            color: #343a40; /* Texto oscuro */
+        }
+
+        /* Otros estilos que desees agregar para adaptar la apariencia académica */
+    </style>
+</head>
+<body>
+    <div class="header">
+        <img src="/static/blito.jpg" alt="Logo de la facultad">
+        <h1>Bienvenido a la Universidad Fasta</h1>
+    </div>
+
+    {% if request.user.is_authenticated %}
+        <div class="container">
+            <p>Selecciona una opción:</p>
+            <a href="{% url 'avance_academico:muestra_materias' %}" class="btn">Materias Carrera</a>
+            <a href="{% url 'avance_academico:lista-profesores' %}" class="btn">Listar profesores</a>
+            <a href="{% url 'avance_academico:anota-materias' %}" class="btn">Anotarse a materias</a>
+            <a href="{% url 'avance_academico:estado-carrera' %}" class="btn">Estado de la carrera</a>
+            <a href="{% url 'avance_academico:ingresa-datos' %}" class="btn">Validar Datos</a>
+        </div>
+    {% else %}
+        {% include "avance_academico/login.html" %}
+    {% endif %}
+</body>
+</html>
 {% endblock %}
